@@ -1,6 +1,6 @@
 <template>
     <!-- CTA Section -->
-    <section class="container py-20">
+    <section class=" py-20">
         <div class="mx-auto max-w-4xl rounded-lg p-8 md:p-12">
             <div class="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
                 <div class="space-y-2">
@@ -11,7 +11,7 @@
                     </p>
                 </div>
                 <NuxtUiButton color="green"
-                    class="h-10 items-center justify-center rounded-md px-8 text-sm font-medium shadow ">
+                    class="h-10 items-center justify-center rounded-md px-8 text-sm font-medium shadow " to="/demo">
                     <span>
                         Try Demo
                     </span>

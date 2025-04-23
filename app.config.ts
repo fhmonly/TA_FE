@@ -8,6 +8,9 @@ export default defineAppConfig({
                 }
             },
             width: 'w-screen max-w-sm',
+        },
+        modal: {
+            container: 'flex min-h-full items-center justify-center text-center',
         }
     }
 })

@@ -1,7 +1,7 @@
 <template>
 
     <!-- Features Section -->
-    <section id="features" class="container py-20">
+    <section id="features" class=" py-20">
         <div class="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
             <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Powerful Prediction Features
             </h2>

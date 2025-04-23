@@ -1,7 +1,7 @@
 <template>
 
     <!-- How It Works Section -->
-    <section id="how-it-works" class="container py-20 bg-muted/50 rounded-lg my-10">
+    <section id="how-it-works" class=" py-20 bg-muted/50 rounded-lg my-10">
         <div class="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
             <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">How It Works</h2>
             <p class="max-w-[85%] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
