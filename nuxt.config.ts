@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@nuxt/image', '@nuxt/ui', 'shadcn-nuxt'],
+  modules: ['@nuxt/image', '@nuxt/ui', 'shadcn-nuxt', 'dayjs-nuxt'],
   ui: {
     prefix: 'NuxtUi'
   },
@@ -30,5 +30,8 @@ export default defineNuxtConfig({
   image: {
     format: ['webp'],
     quality: 80,
-  }
+  },
+  css: [
+    '@/assets/css/main.tw.css'
+  ]
 })

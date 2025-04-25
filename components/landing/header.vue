@@ -75,7 +75,7 @@
                 </nav>
             </div>
             <NuxtUiModal v-model="authModalIsOpen" prevent-close :ui="{
-                width: 'w-full max-w-[400px]',
+                width: 'w-full max-w-screen-mobile sm:max-w-screen-mobile',
             }">
                 <Auth @vue:mounted="authSection = 'login'">
                     <div class="flex justify-end">

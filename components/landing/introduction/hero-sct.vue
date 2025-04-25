@@ -1,6 +1,6 @@
 <template>
-    <section class="mt-20 pb-20 md:mt-32 md:pb-32 mx-auto min-h-screen flex gap-3 flex-col sm:flex-row">
-        <div class="flex flex-col justify-center space-y-6 sm:w-[60%] py-10">
+    <section class="mx-auto md:min-h-screen flex gap-3 flex-col md:flex-row md:py-10">
+        <div class="flex flex-col justify-center space-y-6 md:w-[60%] py-10 tablet:py-20">
             <div class="space-y-2">
                 <h1 class="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                     Predict the Future with ARIMA
@@ -22,7 +22,7 @@
                 </NuxtUiButton>
             </div>
         </div>
-        <Placeholder class="aspect-video flex-grow bg-gray-500" />
+        <NuxtImg src="https://placehold.co/600x400/png" format="webp" class="grow" />
     </section>
 </template>
 <style>
