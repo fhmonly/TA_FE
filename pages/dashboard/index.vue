@@ -1,5 +1,9 @@
 <template>
     <NuxtLayout name="main">
-        <div></div>
     </NuxtLayout>
 </template>
+<script lang="ts" setup>
+definePageMeta({
+    middleware: 'authentication'
+})
+</script>

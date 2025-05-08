@@ -16,6 +16,12 @@ export default defineNuxtConfig({
   ui: {
     prefix: 'NuxtUi'
   },
+  runtimeConfig: {
+    public: {
+      HOST: process.env.HOST,
+      API_HOST: process.env.API_HOST
+    }
+  },
   shadcn: {
     /**
      * Prefix for all the imported component

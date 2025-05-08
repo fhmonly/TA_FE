@@ -5,14 +5,14 @@
                 option-attribute="label" value-attribute="value" />
         </NuxtUiFormGroup>
         <NuxtUiFormGroup class="grow" label="Value" v-if="valueFormat === 'text'">
-            <NuxtUiInput />
+            <NuxtUiInput v-model="localValue" />
         </NuxtUiFormGroup>
         <NuxtUiFormGroup class="grow" label="Value" v-else-if="valueFormat === 'number'">
-            <MyInputNumber />
+            <MyInputNumber v-model="localValue" />
         </NuxtUiFormGroup>
         <div v-else-if="valueFormat === 'date'">
             <NuxtUiFormGroup class="grow" label="Value">
-                <MyInputNumber />
+                <MyInputNumber v-model="localValue" />
             </NuxtUiFormGroup>
             <NuxtUiFormGroup class="grow" label="Format">
                 <MyInputNumber />
@@ -27,6 +27,8 @@ type TValueFormatOptions = {
     label: string,
 }
 
+const model = defineModel()
+
 const props = defineProps<{
     name: string
 }>()
@@ -38,6 +40,8 @@ const valueFormatOptions: TValueFormatOptions[] = [
     { value: 'number', label: 'Number' },
 ]
 
+const localValue = ref()
+
 onMounted(() => {
     if (props.name.includes('date')) {
         valueFormat.value = 'date'
@@ -47,4 +51,12 @@ onMounted(() => {
         valueFormat.value = 'text'
     }
 });
+
+onMounted(() => {
+    localValue.value = model.value
+})
+
+onUnmounted(() => {
+    model.value = localValue.value
+})
 </script>

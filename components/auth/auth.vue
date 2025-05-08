@@ -12,7 +12,7 @@
             <div v-if="authSectionIsLoading"
                 class="absolute top-0 left-0 right-0 bottom-0 z-30 flex backdrop-brightness-75">
                 <div class="flex flex-col w-1/2 m-auto items-center justify-center">
-                    <OverlayLoadingPadlock class="scale-50" />
+                    <LoaderPadlock class="scale-50" />
                     <p>Please Wait...</p>
                 </div>
             </div>

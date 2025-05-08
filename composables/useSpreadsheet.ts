@@ -14,6 +14,30 @@ export function useFileToJSON() {
         try {
             const json = await sheetToJSON(newVal);
             if (json) {
+                const newJSON = json.map((jsonObj) => {
+                    const entries = Object.entries(
+                        jsonObj as Record<string, any>
+                    ).map(([key, value]) => {
+                        switch (key.toLowerCase().trim()) {
+                            case 'date':
+                                key = 'date'
+                                break;
+                            case 'product code':
+                                key = 'product code'
+                                break;
+                            case 'product name':
+                                key = 'product name'
+                                break;
+                            case 'sold(qty)':
+                                key = 'sold(qty)'
+                                break;
+                            default:
+                                break;
+                        }
+                        return [key, value];
+                    });
+                    return Object.fromEntries(entries);
+                })
                 result.value = json as Record<string, any>[]
             }
         } catch (e: unknown) {
