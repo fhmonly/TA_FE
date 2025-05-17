@@ -10,6 +10,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         })
         await execute()
         if (gotoDashboard)
-            return navigateTo('/dashboard')
+            return navigateTo('/dashboard/home')
     }
 });

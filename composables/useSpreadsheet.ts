@@ -1,69 +1,72 @@
-import { sheetToJSON } from "~/utils/spreadsheet/sheetsToJSON"
+import { headerNRow2Sheet, sheet2CSV, sheet2HeaderNRow, sheet2JSON, spreadsheetReader } from "~/utils/spreadsheet/fileReader"
+import * as XLSX from 'xlsx'
 
-export function useFileToJSON() {
+export function useSpreadSheet() {
     const toast = useToast()
-    const file = ref<File | null>(null)
+    const inputFile = ref<File>()
     const status = ref<'idle' | 'loading' | 'error' | 'success'>('idle')
-    const result = ref<Record<string, any>[]>([])
-    const error = ref<Error | null>(null)
-    watch(file, async (newVal) => {
-        if (!newVal)
-            return
-        status.value = 'loading'
-        error.value = null
+    const error = ref<Error>()
+    const result = {
+        jsonHeaders: ref<{
+            key: string,
+            label: string
+        }[]>(),
+        csv: ref<File>(),
+        json: ref<Record<string, any>[]>(),
+    }
+
+    watch(inputFile, async (newVal) => {
         try {
-            const json = await sheetToJSON(newVal);
-            if (json) {
-                const newJSON = json.map((jsonObj) => {
-                    const entries = Object.entries(
-                        jsonObj as Record<string, any>
-                    ).map(([key, value]) => {
-                        switch (key.toLowerCase().trim()) {
-                            case 'date':
-                                key = 'date'
-                                break;
-                            case 'product code':
-                                key = 'product code'
-                                break;
-                            case 'product name':
-                                key = 'product name'
-                                break;
-                            case 'sold(qty)':
-                                key = 'sold(qty)'
-                                break;
-                            default:
-                                break;
-                        }
-                        return [key, value];
-                    });
-                    return Object.fromEntries(entries);
-                })
-                result.value = json as Record<string, any>[]
-            }
-        } catch (e: unknown) {
-            status.value = 'error'
-            if (e instanceof Error) {
-                error.value = e
-            }
-            toast.add({
-                title: 'Error',
-                icon: 'i-heroicons-x-circle',
-                color: 'red',
-                description: error.value?.message
+            if (status.value === 'loading')
+                throw new Error('Please wait until the current file is fully loaded before uploading a new one.');
+            if (!newVal)
+                return
+
+            status.value = 'loading'
+            error.value = undefined
+
+            const ws = await spreadsheetReader(newVal)
+            const { headers, rows } = sheet2HeaderNRow(ws)
+            result.jsonHeaders.value = []
+            const validHeaders = headers.map((v: string) => {
+                const label = v.replaceAll(/\s+/g, ' ')
+                const key = v.toLowerCase().replaceAll(/\s+/g, '_').trim()
+                result.jsonHeaders.value?.push({ label, key })
+                return key
             })
+            const newWs = headerNRow2Sheet(validHeaders, rows)
+            result.json.value = sheet2JSON<Record<string, any>[]>(newWs)
+            result.csv.value = sheet2CSV(newWs)
+        } catch (e: unknown) {
+            setError(error.value?.message || 'Unknown Error', e as Error)
         } finally {
             if (status.value !== 'error') {
-                status.value = 'success'
-                toast.add({
-                    title: 'Success',
-                    icon: 'i-heroicons-document-check',
-                    color: 'green',
-                    description: 'File Imported Successfully.'
-                })
+                setSuccess()
             }
         }
     })
+
+    function setError(msg: string, err?: Error) {
+        status.value = 'error'
+        error.value = err || new Error(msg)
+        toast.add({
+            title: 'Error',
+            icon: 'i-heroicons-x-circle',
+            color: 'red',
+            description: msg
+        })
+    }
+    function setSuccess() {
+        status.value = 'success'
+        toast.add({
+            title: 'Success',
+            icon: 'i-heroicons-document-check',
+            color: 'green',
+            description: 'File Imported Successfully.'
+        })
+    }
+
     return {
-        file, status, result, error
+        inputFile, status, result, error,
     }
 }

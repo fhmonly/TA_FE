@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 definePageMeta({
-    middleware: ['forgot-password-confirmation'],
+    middleware: ['guest', 'forgot-password-confirmation'],
 });
 
 const forgotPasswordState = useState<'valid' | 'invalid' | 'unset'>('forgot-password-state', () => 'unset')

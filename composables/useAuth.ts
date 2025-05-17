@@ -25,7 +25,7 @@ export function useAuthLogin() {
         onResponse(ctx) {
             authState.value = 'logged-in'
             apiAccessToken.value = ctx.response._data.data.accessToken
-            navigateTo('/dashboard')
+            navigateTo('/dashboard/home')
         }
     })
 

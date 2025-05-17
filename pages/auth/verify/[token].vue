@@ -130,7 +130,7 @@
 import type { TAPIResponse } from '~/types/api-response/basicResponse';
 
 definePageMeta({
-    middleware: 'account-activation'
+    middleware: ['guest', 'account-activation']
 })
 
 const route = useRoute();

@@ -12,32 +12,23 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@nuxt/image', '@nuxt/ui', 'shadcn-nuxt', 'dayjs-nuxt'],
+  modules: ['@nuxt/image', '@nuxt/ui', 'dayjs-nuxt'],
   ui: {
     prefix: 'NuxtUi'
   },
   runtimeConfig: {
     public: {
       HOST: process.env.HOST,
-      API_HOST: process.env.API_HOST
+      API_HOST: process.env.API_HOST,
+      PYTHON_API_HOST: process.env.PYTHON_API_HOST,
     }
-  },
-  shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
-    prefix: 'Shad',
-    /**
-     * Directory that the component lives in.
-     * @default "./components/ui"
-     */
-    componentDir: './components/ui'
   },
   image: {
     format: ['webp'],
     quality: 80,
   },
   css: [
-    '@/assets/css/main.tw.css'
+    '@/assets/css/main.tw.css',
+    '~/assets/css/sidebar.tw.css'
   ]
 })

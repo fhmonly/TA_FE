@@ -9,5 +9,6 @@ export function useMyAppState() {
         apiAccessToken: useCookie<string | null>("myAppState-accessToken", {
             default: () => null,
         }),
+        apiAccessTokenStatus: useState<'idle' | 'expired' | 'valid' | 'waiting'>("myAppState-accessTokenStatus", () => 'idle')
     }
 }

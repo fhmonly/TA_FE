@@ -1,0 +1,47 @@
+/* Sidebar styles - supports Tailwind and dark mode */
+
+.sidebar-header h2 {
+  @apply text-xl font-semibold m-0;
+}
+
+.sidebar-content {
+  @apply flex-1 overflow-y-auto py-3;
+}
+
+.nav-list {
+  @apply list-none p-0 m-0;
+}
+
+.nav-item {
+  @apply mb-1;
+}
+
+.sub-item {
+  @apply pl-6;
+}
+
+.nav-icon {
+  @apply mr-3 flex items-center justify-center w-6 h-6;
+}
+
+.nav-text {
+  @apply text-sm flex-1 truncate;
+}
+
+.chevron {
+  @apply transition-transform duration-200;
+}
+
+.chevron-rotated {
+  @apply rotate-180;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  @apply opacity-0 -translate-y-1;
+}

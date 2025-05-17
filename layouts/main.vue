@@ -1,22 +1,88 @@
 <template>
-    <ShadSidebarProvider>
-        <DashboardSidebar />
-        <ShadSidebarInset>
-            <header class="flex h-16 shrink-0 items-center gap-2 border-b">
-                <div class="flex items-center gap-2 px-3">
-                    <ShadSidebarTrigger />
-                    <ShadSeparator orientation="vertical" class="mr-2 h-4" />
+    <div class="w-full h-full min-h-screen">
+        <header class="fixed top-0 left-0 right-0 z-50" ref="header">
+            <div
+                class="m-3 md:mx-10 p-2 md:px-6 flex gap-2 shadow-md rounded-r-full rounded-l-full items-center bg-[#f9fafb]/70 text-gray-800 dark:bg-[#1f2937]/70 backdrop-blur-sm dark:text-white">
+                <NuxtUiButton icon="i-heroicons-bars-3-16-solid" class="aspect-[1/1] w-11 justify-center ms-3"
+                    variant="ghost" color="white" @click="() => sidebarShownToggle()" />
+                <NuxtImg src="/assets/icons/logo-text.png" width="auto" height="32" format="webp"
+                    class="hidden tablet:block" />
+                <NuxtImg src="/assets/icons/logo.png" width="auto" height="32" format="webp"
+                    class="block tablet:hidden" />
+                <div class="ms-auto">
+                    <NuxtUiDropdown :items="items" :popper="{ offsetDistance: 0, placement: 'bottom-end' }" :ui="{
+                        container: 'mt-[5px!important]'
+                    }">
+                        <NuxtUiButton color="white" label="fahim@gmail.com"
+                            trailing-icon="i-heroicons-chevron-down-20-solid" truncate :ui="{
+                                rounded: 'rounded-full'
+                            }">
+                            <template #leading>
+                                <NuxtUiAvatar alt="fahim david" />
+                            </template>
+                        </NuxtUiButton>
+                    </NuxtUiDropdown>
                 </div>
-            </header>
-            <div class="flex flex-1 flex-col gap-4 p-4">
-                <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div class="aspect-video rounded-xl bg-muted/50" />
-                    <div class="aspect-video rounded-xl bg-muted/50" />
-                    <div class="aspect-video rounded-xl bg-muted/50" />
-                </div>
-                <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-                <slot />
             </div>
-        </ShadSidebarInset>
-    </ShadSidebarProvider>
+        </header>
+        <div>
+            <Transition name="fade">
+                <div class="fixed top-0 left-0 bottom-0 w-full max-w-[280px] flex flex-col z-40" ref="desktopMenu"
+                    v-show="sidebarShownSmart">
+                    <div ref="desktopMenu" :style="`margin-top:${headerHeight}px;`"
+                        class="m-3 md:mx-10 md:me-3 h-full relative bottom-0">
+                        <MyDashboardSidebar />
+                    </div>
+                </div>
+            </Transition>
+            <main :style="mainContentContainerStyle" class="px-4 tablet:px-6 md:px-4 md:pe-10 mb-4">
+                <div>
+                    <slot></slot>
+                </div>
+            </main>
+        </div>
+    </div>
 </template>
+<script lang="ts" setup>
+import type { DropdownItem } from '#ui/types'
+import { useElementSize, useWindowSize } from '@vueuse/core';
+
+const windowSize = useWindowSize()
+const header = ref<HTMLElement>()
+const { height: headerHeight } = useElementSize(header)
+const desktopMenu = ref<HTMLDivElement>()
+const { width: desktopMenuWidth } = useElementSize(desktopMenu)
+const mainContentContainerStyle = computed(() => {
+    if (windowSize.width.value >= 768) {
+        return `margin-top:${headerHeight.value}px;margin-left:${desktopMenuWidth.value}px;`
+    } else {
+        return `margin-top:${headerHeight.value}px;`
+    }
+})
+const sidebarShown = ref(false)
+const sidebarShownSmart = computed(() => {
+    if (windowSize.width.value >= 768) {
+        return true
+    } else {
+        return sidebarShown.value
+    }
+})
+function sidebarShownToggle() {
+    if (windowSize.width.value >= 768) {
+        return
+    }
+    sidebarShown.value = !sidebarShown.value
+}
+const items: DropdownItem[][] = [
+    [{
+        label: 'MyProfile',
+        icon: 'i-heroicons-user-16-solid',
+        to: '/dashboard/home'
+    }],
+    [{
+        label: 'Logout',
+        click() { console.log('logout confirm') },
+        icon: 'i-heroicons-arrow-right-on-rectangle-20-solid'
+    }]
+]
+</script>

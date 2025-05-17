@@ -1,10 +1,6 @@
 <template>
     <NuxtLayout name="landing-page">
-        <div @dragenter.prevent @dragover.prevent @drop="e => {
-            if (convertStatus !== 'loading') {
-                handleDragFile(e)
-            }
-        }">
+        <div @dragenter.prevent @dragover.prevent @drop="handleDragFile">
             <div class="my-3">
                 <NuxtUiCard>
                     <div class="space-y-3">
@@ -13,6 +9,7 @@
                 </NuxtUiCard>
             </div>
             <div>
+                <NuxtUiTabs v-model="selectedTab" :items="tabItems" />
                 <NuxtUiCard>
                     <template #header>
                         <div class="mb-3 flex gap-2">
@@ -23,8 +20,9 @@
                                 </label>
                                 <input id="convert-file-input" type="file" hidden @input="handleFileInput" />
                             </div>
-                            <LandingDemoModalMakePrediction v-model="modalMakePredictionModel" :products
-                                :disabled="analyzeBtnDisabled" />
+                            <LandingDemoModalMakePrediction v-model="modalMakePredictionModel"
+                                v-model:csv="result.csv.value" :disabled="analyzeBtnDisabled"
+                                v-model:result="predictionResult" />
                         </div>
                         <div class="warning space-y-2">
                             <NuxtUiAlert v-for="(item, index) in missingColumns" :key="index"
@@ -37,27 +35,10 @@
                         </div>
                     </template>
                     <template #default>
-                        <NuxtUiTable :columns :loading="convertStatus === 'loading'" :rows="rows">
-                            <template #actions-data="{ row, column, getRowData }">
-                                <!-- <NuxtUiDropdown :items="items" :popper="{ placement: 'bottom-start' }">
-                                    <NuxtUiButton icon="i-heroicons-ellipsis-vertical-solid" color="blue" />
-                                    <template #item="{ item }: (Record<'item', TPredictionTableDropdown>)">
-                                        <div @click="(event) => {
-                                            item.data!.value = row;
-                                            item.modalShown!.value = true;
-                                        }" class="flex items-center justify-between w-full">
-                                            <span class="truncate">{{ item.label }}</span>
-
-                                            <NuxtUiIcon :name="(item.icon as string)"
-                                                class="flex-shrink-0 h-4 w-4 ms-auto" :class="[
-                                                    !!item.iconClass ?
-                                                        item.iconClass :
-                                                        'text-gray-400 dark:text-gray-500'
-                                                ]" />
-                                        </div>
-                                    </template>
-</NuxtUiDropdown> -->
-                            </template>
+                        <NuxtUiTable :columns :loading="status === 'loading'" :rows="rows" v-if="selectedTab === 0">
+                        </NuxtUiTable>
+                        <NuxtUiTable :columns="predictionResultHeader" :loading="predictionResult.status === 'pending'"
+                            :rows="predictionResult.result?.data" v-else>
                         </NuxtUiTable>
                     </template>
                     <template #footer>
@@ -66,20 +47,15 @@
                                 Nothing here. Please import your spreadsheet or drag your spreadsheet file here.
                             </span>
                             <span v-else>
-                                Show {{ rows.length }} data from {{ processedRecords.length }} data
+                                Show {{ rows.length }} data from {{ records.length }} data
                             </span>
-                            <div v-if="!!processedRecords && processedRecords.length > 0">
-                                <NuxtUiPagination v-model="page" :page-count="pageCount"
-                                    :total="processedRecords.length" />
+                            <div v-if="!!records && records.length > 0">
+                                <NuxtUiPagination v-model="page" :page-count="pageCount" :total="records.length" />
                             </div>
                         </div>
                     </template>
                 </NuxtUiCard>
             </div>
-            <MyModalViewPredictionRow v-model:shown="items[0][0].modalShown!.value"
-                v-model:table-data="items[0][0].data!.value" />
-            <MyModalUpdatePredictionRow v-model:shown="items[0][1].modalShown!.value"
-                v-model:table-data="items[0][1].data!.value" />
         </div>
     </NuxtLayout>
 </template>
@@ -87,17 +63,33 @@
 definePageMeta({
     middleware: 'guest'
 })
-import type { DropdownItem } from '#ui/types'
+import type { TPyPrediction } from '~/types/api-response/py-prediction';
 import type { TModalMakePredictionModel } from '~/types/landing-page/demo/modalMakePrediction'
 
-const { file, result: convertResult, status: convertStatus } = useFileToJSON()
+function handleDragFile(e: DragEvent) {
+    e.preventDefault();
+    if (status.value === 'loading') return
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+        inputFile.value = files[0]
+    }
+}
+
+function handleFileInput(e: Event) {
+    if (status.value === 'loading') return
+    const target = e.target as HTMLInputElement
+    if (target?.files && target.files.length > 0) {
+        const uploaded = target.files[0];
+        inputFile.value = uploaded;
+    }
+}
+
 const {
-    records, processedRecords, status, loadingDetail, mismatchDetail,
-    columns, missingColumns,
-    page, pageCount,
-    products, rows
+    inputFile, status, loadingDetail, result,
+    columns, missingColumns, mismatchDetail,
+    records, products,
+    page, pageCount, rows
 } = usePredictionTable()
-watch(convertResult, newVal => records.value = newVal)
 const analyzeBtnDisabled = computed(() => {
     const notHaveAnyProduct = products.value.length < 1
     const hasMissingColumn = missingColumns.value.length >= 1
@@ -118,64 +110,36 @@ const modalMakePredictionModel = reactive<TModalMakePredictionModel>({
     arimaModel: undefined,
     predictionMode: 'optimal'
 })
-
-const modal = reactive({
-    view: {
-        shown: false,
-        data: {}
-    },
-    update: {
-        shown: false,
-        data: {}
-    },
-    delete: {
-        shown: false
+const predictionResult = ref<{
+    status: 'idle' | 'pending' | 'success' | 'error'
+    result?: TPyPrediction
+}>({
+    status: 'idle',
+    result: undefined,
+})
+const predictionResultHeader = computed(() => {
+    const period = predictionResult.value.result?.data[0].predictionPeriod === 'monthly' ? 'Month' : 'Week'
+    return ([
+        { key: "product", label: "#", sortable: true },
+        { key: "phase1", label: `${period} 1`, sortable: true },
+        { key: "phase2", label: `${period} 2`, sortable: true },
+        { key: "phase3", label: `${period} 3`, sortable: true },
+    ])
+})
+const selectedTab = ref(0)
+watch(() => predictionResult.value.status, newVal => {
+    if (newVal === 'success') {
+        selectedTab.value = 1
     }
 })
-
-function handleDragFile(e: DragEvent) {
-    e.preventDefault();
-    const files = e.dataTransfer?.files;
-    if (files && files.length > 0) {
-        file.value = files[0]
-    }
-}
-
-function handleFileInput(e: Event) {
-    const target = e.target as HTMLInputElement
-    if (target?.files && target.files.length > 0) {
-        const uploaded = target.files[0];
-        file.value = uploaded;
-    }
-}
-
-type TPredictionTableDropdown = DropdownItem & {
-    data?: Ref<Record<string, any>>,
-    modalShown?: Ref<boolean>
-}
-const items:
-    TPredictionTableDropdown[][] = [
-        [{
-            label: 'View',
-            icon: 'i-heroicons-eye-20-solid',
-            shortcuts: ['V'],
-            iconClass: '',
-            data: ref({}),
-            modalShown: ref(false)
-        }, {
-            label: 'Edit',
-            icon: 'i-heroicons-pencil-square-20-solid',
-            shortcuts: ['E'],
-            iconClass: '',
-            data: ref({}),
-            modalShown: ref(false)
-        }], [{
-            label: 'Delete',
-            icon: 'i-heroicons-trash-20-solid',
-            shortcuts: ['D'],
-            iconClass: '',
-            data: ref({}),
-            modalShown: ref(false)
-        }]
-    ]
+const tabItems = [
+    {
+        label: 'Table',
+        icon: 'i-heroicons-table-cells',
+    },
+    {
+        label: 'Result',
+        icon: 'i-heroicons-chart-bar',
+    },
+];
 </script>
