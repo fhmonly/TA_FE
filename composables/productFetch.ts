@@ -13,7 +13,14 @@ export function useProductList() {
 
 export function useAddProduct() {
     const toast = useToast()
-    const formState = reactive({
+    const formState = reactive<Partial<{
+        product_code: string,
+        product_name: string,
+        stock: number,
+        buying_price: number,
+        selling_price: number,
+        product_category_id: number,
+    }>>({
         product_code: undefined,
         product_name: undefined,
         stock: undefined,

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full min-h-screen">
+    <div class="w-full h-full">
         <header class="fixed top-0 left-0 right-0 z-50" ref="header">
             <div
                 class="m-3 md:mx-10 p-2 md:px-6 flex gap-2 shadow-md rounded-r-full rounded-l-full items-center bg-[#f9fafb]/70 text-gray-800 dark:bg-[#1f2937]/70 backdrop-blur-sm dark:text-white">
@@ -41,6 +41,21 @@
                 </div>
             </main>
         </div>
+        <NuxtUiModal v-model="logoutConfirmation">
+            <NuxtUiCard class="p-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-lg font-semibold text-gray-800">Confirm Logout</h2>
+                    <p class="text-sm text-gray-600">Are you sure you want to log out of your account?</p>
+                </div>
+                <div class="flex justify-center gap-2 mt-10">
+                    <NuxtUiButton label="Cancel" variant="ghost" @click="logoutConfirmation = false"
+                        :disabled="logoutStatus === 'pending'" />
+                    <NuxtUiButton color="red" label="Log out" @click="logoutNow()"
+                        :loading="logoutStatus === 'pending'" />
+                </div>
+            </NuxtUiCard>
+        </NuxtUiModal>
+
     </div>
 </template>
 <script lang="ts" setup>
@@ -73,6 +88,13 @@ function sidebarShownToggle() {
     }
     sidebarShown.value = !sidebarShown.value
 }
+
+const logoutConfirmation = ref(false)
+
+const {
+    logoutNow,
+    logoutStatus
+} = useAuthLogout()
 const items: DropdownItem[][] = [
     [{
         label: 'MyProfile',
@@ -81,7 +103,7 @@ const items: DropdownItem[][] = [
     }],
     [{
         label: 'Logout',
-        click() { console.log('logout confirm') },
+        click() { logoutConfirmation.value = true },
         icon: 'i-heroicons-arrow-right-on-rectangle-20-solid'
     }]
 ]

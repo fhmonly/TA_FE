@@ -12,7 +12,21 @@
 
                 <NuxtUiForm @submit="execute" :schema="productSchema" :state="formState">
                     <NuxtUiFormGroup label="Product Code" name="product_code" required>
-                        <NuxtUiInput v-model="formState.product_code" placeholder="Enter product code" />
+                        <div v-if="scanMode || !formState.product_code" class="mb-2">
+                            <MyBarcodeScanner @scanned="e => {
+                                formState.product_code = e
+                                scanMode = false
+                            }" />
+                        </div>
+                        <NuxtUiInput v-model="formState.product_code" placeholder="Enter product code"
+                            :ui="{ icon: { trailing: { pointer: '', padding: { md: 'px-0.5' } } } }" size="md">
+                            <template #trailing>
+                                <NuxtUiButton icon="i-heroicons-qr-code-20-solid" @click="() => {
+                                    scanMode = true
+                                    console.log('clicked')
+                                }" label="QR" />
+                            </template>
+                        </NuxtUiInput>
                     </NuxtUiFormGroup>
 
                     <NuxtUiFormGroup label="Product Name" name="product_name" required>
@@ -49,6 +63,7 @@
 </template>
 <script lang="ts" setup>
 const modalShown = ref<boolean>(false)
+const scanMode = ref(false)
 const emit = defineEmits(['created'])
 const {
     data, error, execute, formState, status, productSchema
