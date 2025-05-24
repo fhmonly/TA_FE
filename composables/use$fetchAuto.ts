@@ -41,7 +41,7 @@ export function use$fetchWithAutoReNew<Data = TAPIResponse, ErrorData = Error>(
                 ...options,
                 headers: headers.value,
                 baseURL: config.public.API_HOST,
-                // credentials: 'include',
+                credentials: 'include',
                 onResponse: async (ctx) => {
                     data.value = ctx.response._data;
                     if (ctx.response.ok) {

@@ -19,17 +19,39 @@ export const sidebarItems = [
         label: 'Dataset',
         icon: 'i-heroicons-folder-20-solid',
         to: '/dashboard/dataset',
-        //     children: [
-        //         {
-        //             label: 'Suppliers',
-        //             to: '/dashboard/dataset/suppliers',
-        //             icon: 'i-heroicons-building-storefront-20-solid',
-        //         },
-        //         {
-        //             label: 'Products',
-        //             to: '/dashboard/dataset/products',
-        //             icon: 'i-heroicons-cube-20-solid',
-        //         },
-        //     ],
+        children: [
+            {
+                label: 'Suppliers',
+                to: '/dashboard/dataset/suppliers',
+                icon: 'i-heroicons-building-storefront-20-solid',
+            },
+            {
+                label: 'Products',
+                to: '/dashboard/dataset/products',
+                icon: 'i-heroicons-cube-20-solid',
+            },
+        ],
     },
+    {
+        label: 'Logs',
+        to: '/dashboard/history',
+        icon: 'i-heroicons-clipboard-document-list-20-solid',
+        children: [
+            {
+                label: 'Restock History',
+                to: '/dashboard/history/restock-history',
+                icon: 'i-heroicons-truck-20-solid',
+            },
+            {
+                label: 'Sales History',
+                to: '/dashboard/history/sales-history',
+                icon: 'i-heroicons-banknotes-20-solid',
+            },
+        ],
+    },
+    {
+        label: 'File Operation',
+        to: '/dashboard/file-operation',
+        icon: 'i-heroicons-arrow-up-tray-20-solid',
+    }
 ]

@@ -1,9 +1,9 @@
 import { headerNRow2Sheet, sheet2CSV, sheet2HeaderNRow, sheet2JSON, spreadsheetReader } from "~/utils/spreadsheet/fileReader"
 import * as XLSX from 'xlsx'
 
-export function useSpreadSheet() {
+export function useSpreadSheet(inputFile: Ref<File | null>) {
     const toast = useToast()
-    const inputFile = ref<File>()
+    // const inputFile = ref<File>()
     const status = ref<'idle' | 'loading' | 'error' | 'success'>('idle')
     const error = ref<Error>()
     const result = {

@@ -1,5 +1,4 @@
 <template>
-    {{ selectedId }}
     <NuxtUiSelectMenu v-model="selected" value-attribute="id" :options option-attribute="category_name" searchable
         creatable show-create-option-when="always" placeholder="Select category" :loading="status === 'pending'"
         v-model:query="query">

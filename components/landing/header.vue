@@ -14,29 +14,33 @@
                             color="white" variant="link" />
 
                         <NuxtUiSlideover v-model="isOpen" side="left">
-                            <div class="p-4 flex flex-col h-full bg-gray-900 text-white">
+                            <div class="p-4 flex flex-col h-full bg-white dark:bg-gray-900 text-black dark:text-white">
                                 <!-- Tombol close -->
                                 <NuxtUiButton color="gray" variant="ghost" size="sm" icon="i-heroicons-x-mark-20-solid"
                                     class="absolute end-5 top-5 z-10 " square padded @click="isOpen = false" />
 
                                 <!-- Navigasi -->
-                                <div class="mt-10 space-y-6">
+                                <div class="mt-10 space-y-3">
                                     <NuxtLink to="/#how-it-works" class="text-lg block hover:text-green-500"
                                         @click="isOpen = false">
-                                        How It Works
+                                        How It Works?
                                     </NuxtLink>
                                     <NuxtLink to="/#features" class="text-lg block hover:text-green-500"
                                         @click="isOpen = false">
                                         Features
                                     </NuxtLink>
+                                    <NuxtLink to="/dashboard/home" class="text-lg block hover:text-green-500"
+                                        @click="isOpen = false" v-if="authState === 'logged-in'">
+                                        Dashboard
+                                    </NuxtLink>
                                     <NuxtLink to="/demo" class="text-lg block text-green-500 font-semibold"
-                                        @click="isOpen = false">
+                                        @click="isOpen = false" v-if="authState !== 'logged-in'">
                                         Demo
                                     </NuxtLink>
                                 </div>
 
                                 <!-- Tombol "Get Started" -->
-                                <div class="mt-auto flex justify-start">
+                                <div class="mt-auto flex justify-start" v-if="authState !== 'logged-in'">
                                     <NuxtUiButton color="green" @click="() => {
                                         if (route.path.startsWith('/auth/forgot-password')) {
                                             navigateTo('/auth')
@@ -60,15 +64,17 @@
                             Features
                         </NuxtLink>
                         <NuxtLink href="/demo"
-                            class="text-sm font-medium text-primary transition-colors hover:text-primary/80">
+                            class="text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                            v-if="authState !== 'logged-in'">
                             Demo</NuxtLink>
+                        <NuxtUiButton label="Dashboard" v-if="authState === 'logged-in'" />
                         <NuxtUiButton color="green" @click="() => {
                             if (route.path.startsWith('/auth/forgot-password')) {
                                 navigateTo('/auth')
                             } else {
                                 authModalIsOpen = true
                             }
-                        }">
+                        }" v-else>
                             Log In
                         </NuxtUiButton>
                     </div>
@@ -93,4 +99,7 @@ const isOpen = ref(false)
 const authModalIsOpen = ref<boolean>(false)
 const route = useRoute();
 const authSection = useState<'login' | 'register' | 'forgot-password'>('auth-section', () => 'login')
+const {
+    authState
+} = useMyAppState()
 </script>

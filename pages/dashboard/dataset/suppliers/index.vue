@@ -2,7 +2,6 @@
     <NuxtLayout name="main">
         <div class="space-y-4">
             <DashboardDatasetSuppliers />
-            <DashboardDatasetProducts />
         </div>
     </NuxtLayout>
 </template>

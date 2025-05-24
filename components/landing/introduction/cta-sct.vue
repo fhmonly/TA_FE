@@ -13,10 +13,16 @@
                 <NuxtUiButton color="green"
                     class="h-10 items-center justify-center rounded-md px-8 text-sm font-medium shadow " to="/demo">
                     <span>
-                        Try Demo
+                        {{ authState === 'logged-in' ? 'Dashboard' : 'Try Demo' }}
+
                     </span>
                 </NuxtUiButton>
             </div>
         </div>
     </section>
 </template>
+<script lang="ts" setup>
+const {
+    authState
+} = useMyAppState()
+</script>

@@ -13,7 +13,7 @@
                 <NuxtUiButton
                     class="inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium shadow"
                     to="/demo">
-                    Try Demo
+                    {{ authState === 'logged-in' ? 'Dashboard' : 'Try Demo' }}
                 </NuxtUiButton>
                 <NuxtUiButton variant="outline" color="white"
                     class="inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium shadow"
@@ -25,6 +25,11 @@
         <NuxtImg src="https://placehold.co/600x400/png" format="webp" class="grow" />
     </section>
 </template>
+<script lang="ts" setup>
+const {
+    authState
+} = useMyAppState()
+</script>
 <style>
 :root {
     scroll-behavior: smooth;

@@ -31,6 +31,7 @@ export function useFetchWithAutoReNew<Data = TAPIResponse>(
         ...options,
         headers,
         baseURL: config.public.API_HOST,
+        credentials: 'include',
         async onResponse(ctx) {
             if (ctx.response.ok) {
                 if (typeof options?.onResponse === "function") {

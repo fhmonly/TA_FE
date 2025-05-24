@@ -8,10 +8,10 @@ const requiredColumn = [
     { label: 'Sold(qty)', key: 'sold(qty)', sortable: true, }
 ]
 
-export function usePredictionTable() {
+export function usePredictionTable(inputFile: Ref<File | null>) {
     const {
-        inputFile, result, status: sheetReaderStatus
-    } = useSpreadSheet()
+        result, status: sheetReaderStatus
+    } = useSpreadSheet(inputFile)
     const status = ref<'idle' | 'loading' | 'loaded'>('idle')
     const loadingDetail = ref<string | undefined>();
     const columns = ref<TableColumn[]>(requiredColumn)

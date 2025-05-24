@@ -1,24 +1,22 @@
 <template>
-    <NuxtLayout name="landing-page">
-        <div @dragenter.prevent @dragover.prevent @drop="handleDragFile">
-            <div class="my-3">
-                <NuxtUiCard>
-                    <div class="space-y-3">
-                        <h2 class="text-base font-medium">Prediction Dashboard</h2>
-                    </div>
-                </NuxtUiCard>
-            </div>
-            <div>
+    <NuxtLayout name="main">
+        <div @dragenter.prevent @dragover.prevent @drop="onDragHandler">
+            <NuxtUiCard>
                 <NuxtUiTabs v-model="selectedTab" :items="tabItems" />
                 <NuxtUiCard>
                     <template #header>
                         <div class="mb-3 flex gap-2">
-                            <div>
-                                <label for="convert-file-input" class="nuxtui-btn ">
-                                    <NuxtUiIcon name="i-heroicons-document-arrow-down" size="16px" />
-                                    Import
+                            <div class="flex gap-2">
+                                <label for="import-file-input" class="cursor-pointer">
+                                    <input type="file" hidden @input="onInputHandler" id="import-file-input" />
+                                    <span class="pointer-events-none">
+                                        <NuxtUiButton icon="i-heroicons-arrow-down-on-square" label="Import"
+                                            color="gray" />
+                                    </span>
                                 </label>
-                                <input id="convert-file-input" type="file" hidden @input="handleFileInput" />
+                                <div>
+                                    <NuxtUiButton :label="`Save ${1} Products`" />
+                                </div>
                             </div>
                             <LandingDemoModalMakePrediction v-model="modalMakePredictionModel"
                                 v-model:csv="result.csv.value" :disabled="analyzeBtnDisabled"
@@ -55,43 +53,31 @@
                         </div>
                     </template>
                 </NuxtUiCard>
-            </div>
+            </NuxtUiCard>
         </div>
     </NuxtLayout>
 </template>
 <script lang="ts" setup>
-definePageMeta({
-    middleware: 'guest'
-})
+import { useFileHandler } from '~/composables/fileHandler';
 import type { TPyPrediction } from '~/types/api-response/py-prediction';
-import type { TModalMakePredictionModel } from '~/types/landing-page/demo/modalMakePrediction'
+import type { TModalMakePredictionModel } from '~/types/landing-page/demo/modalMakePrediction';
 
-const inputFile = ref<File | null>(null)
-
-function handleDragFile(e: DragEvent) {
-    e.preventDefault();
-    if (status.value === 'loading') return
-    const files = e.dataTransfer?.files;
-    if (files && files.length > 0) {
-        inputFile.value = files[0]
-    }
-}
-
-function handleFileInput(e: Event) {
-    if (status.value === 'loading') return
-    const target = e.target as HTMLInputElement
-    if (target?.files && target.files.length > 0) {
-        const uploaded = target.files[0];
-        inputFile.value = uploaded;
-    }
-}
+definePageMeta({
+    middleware: ['authentication']
+})
+const {
+    file,
+    onDragHandler,
+    onInputHandler
+} = useFileHandler()
 
 const {
     status, loadingDetail, result,
     columns, missingColumns, mismatchDetail,
     records, products,
     page, pageCount, rows
-} = usePredictionTable(inputFile)
+} = usePredictionTable(file)
+
 const analyzeBtnDisabled = computed(() => {
     const notHaveAnyProduct = products.value.length < 1
     const hasMissingColumn = missingColumns.value.length >= 1
@@ -128,12 +114,14 @@ const predictionResultHeader = computed(() => {
         { key: "phase3", label: `${period} 3`, sortable: true },
     ])
 })
+
 const selectedTab = ref(0)
 watch(() => predictionResult.value.status, newVal => {
     if (newVal === 'success') {
         selectedTab.value = 1
     }
 })
+
 const tabItems = [
     {
         label: 'Table',

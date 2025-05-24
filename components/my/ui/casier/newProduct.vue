@@ -30,8 +30,8 @@
                     <DashboardDatasetProductCategoryInput v-model="formState.product_category_id" />
                 </NuxtUiFormGroup>
 
-                <NuxtUiFormGroup label="Buying Price" name="buying_price">
-                    <NuxtUiInput v-model="formState.buying_price" type="number" placeholder="Enter buying price" />
+                <NuxtUiFormGroup label="Selling Price" name="selling_price">
+                    <NuxtUiInput v-model="formState.selling_price" type="number" placeholder="Enter selling price" />
                 </NuxtUiFormGroup>
 
                 <div class="flex justify-end mt-4 space-x-2">
