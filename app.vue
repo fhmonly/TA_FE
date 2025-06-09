@@ -1,11 +1,12 @@
 <template>
+  <NuxtPage />
+  <Html :class="{ 'nuxt-unload': !isLoaded }" />
   <div class="flex fixed top-0 left-0 right-0 bottom-0 bg-gray-800 items-center justify-center" v-if="!isLoaded"
     style="z-index: 99999;">
     <div>
       <MyLoaderPulseRing />
     </div>
   </div>
-  <NuxtPage />
   <NuxtUiNotifications />
 </template>
 <script lang="ts" setup>
@@ -22,3 +23,9 @@ onNuxtReady(async () => {
   isLoaded.value = true
 })
 </script>
+<style>
+.nuxt-unload body,
+.nuxt-unload body * {
+  overflow: hidden !important;
+}
+</style>

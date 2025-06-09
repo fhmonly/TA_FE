@@ -55,7 +55,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import type { TPyPrediction } from '~/types/api-response/py-prediction';
+import type { TPyPrediction } from '~/types/api-response/prediction';
 import type { TModalMakePredictionProps } from '~/types/landing-page/demo/modalMakePrediction';
 
 const modalShown = ref<boolean>(false)

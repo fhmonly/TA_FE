@@ -29,8 +29,8 @@
             <Transition name="fade">
                 <div class="fixed top-0 left-0 bottom-0 w-full max-w-[280px] flex flex-col z-40" ref="desktopMenu"
                     v-show="sidebarShownSmart">
-                    <div ref="desktopMenu" :style="`margin-top:${headerHeight}px;`"
-                        class="m-3 md:mx-10 md:me-3 h-full relative bottom-0">
+                    <div ref="desktopMenu" :style="`padding-top:${headerHeight}px;`"
+                        class="p-3 md:px-10 md:pe-3 h-full relative bottom-0">
                         <MyDashboardSidebar />
                     </div>
                 </div>

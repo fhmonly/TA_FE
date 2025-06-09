@@ -16,6 +16,11 @@ export const sidebarItems = [
         icon: 'i-heroicons-arrow-path-20-solid',
     },
     {
+        label: 'Prediction',
+        to: '/dashboard/prediction',
+        icon: 'i-heroicons-chart-bar-20-solid',
+    },
+    {
         label: 'Dataset',
         icon: 'i-heroicons-folder-20-solid',
         to: '/dashboard/dataset',

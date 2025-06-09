@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-export async function spreadsheetReader(file: File) {
+export async function spreadsheetReader(file: File): Promise<XLSX.WorkSheet> {
     try {
         const fileBuffer = await file.arrayBuffer();
         const workbook = XLSX.read(fileBuffer, {
@@ -33,7 +33,7 @@ export function sheet2JSON<T = unknown>(worksheet: XLSX.WorkSheet) {
     return XLSX.utils.sheet_to_json<T>(worksheet, { defval: "" });
 }
 
-export function sheet2CSV(worksheet: XLSX.WorkSheet) {
+export function sheet2CSVFile(worksheet: XLSX.WorkSheet) {
     const csv = XLSX.utils.sheet_to_csv(worksheet);
     const csvBlob = new Blob([csv], { type: 'text/csv' });
     return new File([csvBlob], 'converted.csv', { type: 'text/csv' });

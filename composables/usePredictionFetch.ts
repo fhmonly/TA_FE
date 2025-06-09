@@ -1,7 +1,7 @@
 import type { AsyncDataRequestStatus } from 'nuxt/app';
 import type { TDurationType, TPredictionMode } from '~/types/landing-page/demo/modalMakePrediction';
 import { z } from 'zod';
-import type { TPyPrediction } from '~/types/api-response/py-prediction';
+import type { TPyPrediction } from '~/types/api-response/prediction';
 
 export function usePredictionFetch() {
     const config = useRuntimeConfig();

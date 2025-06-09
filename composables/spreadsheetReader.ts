@@ -1,10 +1,8 @@
-import { headerNRow2Sheet, sheet2CSV, sheet2HeaderNRow, sheet2JSON, spreadsheetReader } from "~/utils/spreadsheet/fileReader"
-import * as XLSX from 'xlsx'
 import type { TRecordJSONResult } from "~/types/table/prediction-input"
+import { headerNRow2Sheet, sheet2HeaderNRow, sheet2JSON, spreadsheetReader } from "~/utils/spreadsheet/fileReader"
 
-export function useSpreadSheet(inputFile: Ref<File | null>) {
+export function useSpreadSheetReader(inputFile: Ref<File | null>) {
     const toast = useToast()
-    // const inputFile = ref<File>()
     const status = ref<'idle' | 'loading' | 'error' | 'success'>('idle')
     const error = ref<Error>()
     const result = {
@@ -12,8 +10,7 @@ export function useSpreadSheet(inputFile: Ref<File | null>) {
             key: string,
             label: string
         }[]>(),
-        csv: ref<File>(),
-        json: ref<TRecordJSONResult[]>(),
+        json: ref<TRecordJSONResult>(),
     }
 
     watch(inputFile, async (newVal) => {
@@ -36,8 +33,7 @@ export function useSpreadSheet(inputFile: Ref<File | null>) {
                 return key
             })
             const newWs = headerNRow2Sheet(validHeaders, rows)
-            result.json.value = sheet2JSON<TRecordJSONResult>(newWs)
-            result.csv.value = sheet2CSV(newWs)
+            result.json.value = sheet2JSON<TRecordJSONResult[number]>(newWs)
         } catch (e: unknown) {
             setError(error.value?.message || 'Unknown Error', e as Error)
         } finally {

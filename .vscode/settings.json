@@ -1,4 +1,4 @@
 {
-    "iconify.annotations": false,
+    "iconify.annotations": true,
     "iconify.inplace": false
 }

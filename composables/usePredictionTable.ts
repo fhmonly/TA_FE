@@ -5,7 +5,7 @@ const requiredColumn = [
     { label: 'Date', key: 'date', sortable: true, },
     { label: 'Product Code', key: 'product_code', sortable: true, },
     { label: 'Product Name', key: 'product_name', sortable: true, },
-    { label: 'Sold(qty)', key: 'sold(qty)', sortable: true, }
+    { label: 'Amount', key: 'amount', sortable: true, }
 ]
 
 export function usePredictionTable(inputFile: Ref<File | null>) {

@@ -11,3 +11,10 @@ export type TProductResponse = {
     product_category_id?: number
     category_name: string
 }
+
+export type TLowStockProductResponse = {
+    id: number;
+    product_name: string;
+    stock: number;
+    low_stock_limit: number;
+};

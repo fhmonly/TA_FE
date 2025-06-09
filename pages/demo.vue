@@ -20,9 +20,8 @@
                                 </label>
                                 <input id="convert-file-input" type="file" hidden @input="handleFileInput" />
                             </div>
-                            <LandingDemoModalMakePrediction v-model="modalMakePredictionModel"
-                                v-model:csv="result.csv.value" :disabled="analyzeBtnDisabled"
-                                v-model:result="predictionResult" />
+                            <NuxtUiButton label="Forecast All" @click="forecastBtnOnClick"
+                                :disabled="analyzeBtnDisabled" :color="analyzeBtnDisabled ? 'gray' : 'green'" />
                         </div>
                         <div class="warning space-y-2">
                             <NuxtUiAlert v-for="(item, index) in missingColumns" :key="index"
@@ -36,12 +35,15 @@
                     </template>
                     <template #default>
                         <NuxtUiTable :columns :loading="status === 'loading'" :rows="rows" v-if="selectedTab === 0">
+                            <template #product_code-data="{ row }">
+                                <span class="">
+                                    {{ row.product_code || row.product_name.replaceAll() }}
+                                </span>
+                            </template>
                         </NuxtUiTable>
-                        <NuxtUiTable :columns="predictionResultHeader" :loading="predictionResult.status === 'pending'"
-                            :rows="predictionResult.result?.data" v-else>
-                        </NuxtUiTable>
+                        <MyPredictions v-else-if="selectedTab === 1" />
                     </template>
-                    <template #footer>
+                    <template #footer v-if="selectedTab === 0">
                         <div class="flex justify-between">
                             <span v-if="rows.length < 1">
                                 Nothing here. Please import your spreadsheet or drag your spreadsheet file here.
@@ -60,11 +62,11 @@
     </NuxtLayout>
 </template>
 <script lang="ts" setup>
+import { useStoreFileRecord } from '~/stores/file/record';
+
 definePageMeta({
     middleware: 'guest'
 })
-import type { TPyPrediction } from '~/types/api-response/py-prediction';
-import type { TModalMakePredictionModel } from '~/types/landing-page/demo/modalMakePrediction'
 
 const inputFile = ref<File | null>(null)
 
@@ -83,6 +85,7 @@ function handleFileInput(e: Event) {
     if (target?.files && target.files.length > 0) {
         const uploaded = target.files[0];
         inputFile.value = uploaded;
+        target.value = ''
     }
 }
 
@@ -91,56 +94,46 @@ const {
     columns, missingColumns, mismatchDetail,
     records, products,
     page, pageCount, rows
-} = usePredictionTable(inputFile)
+} = usePredictionInputTable(inputFile)
+
+const storeFileRecord = useStoreFileRecord()
+let forecastBtnClicked = ref<boolean>(false)
+
+watch([records, products], ([newRecord, newProducts]) => {
+    storeFileRecord.saveAll(newRecord, newProducts)
+    forecastBtnClicked.value = false
+})
+
 const analyzeBtnDisabled = computed(() => {
-    const notHaveAnyProduct = products.value.length < 1
+    const notHaveAnyValidProduct = products.value.filter(v => v.total >= 10).length < 1
     const hasMissingColumn = missingColumns.value.length >= 1
     const tableHasError = mismatchDetail.value.length >= 1
     const tableIsLoading = status.value === 'loading'
     return (
-        notHaveAnyProduct ||
+        notHaveAnyValidProduct ||
         hasMissingColumn ||
         tableHasError ||
-        tableIsLoading
+        tableIsLoading ||
+        forecastBtnClicked.value
     )
 })
-
-const modalMakePredictionModel = reactive<TModalMakePredictionModel>({
-    predictionPeriod: undefined,
-    recordPeriod: undefined,
-    selectedProduct: undefined,
-    arimaModel: undefined,
-    predictionMode: 'optimal'
-})
-const predictionResult = ref<{
-    status: 'idle' | 'pending' | 'success' | 'error'
-    result?: TPyPrediction
-}>({
-    status: 'idle',
-    result: undefined,
-})
-const predictionResultHeader = computed(() => {
-    const period = predictionResult.value.result?.data[0].predictionPeriod === 'monthly' ? 'Month' : 'Week'
-    return ([
-        { key: "product", label: "#", sortable: true },
-        { key: "phase1", label: `${period} 1`, sortable: true },
-        { key: "phase2", label: `${period} 2`, sortable: true },
-        { key: "phase3", label: `${period} 3`, sortable: true },
-    ])
-})
 const selectedTab = ref(0)
-watch(() => predictionResult.value.status, newVal => {
-    if (newVal === 'success') {
-        selectedTab.value = 1
-    }
-})
+
+const forecastBtnOnClick = () => {
+    selectedTab.value = 1
+    setTimeout(() => {
+        storeFileRecord.forecastAllProduct()
+        forecastBtnClicked.value = true
+    }, 100);
+}
+
 const tabItems = [
     {
         label: 'Table',
         icon: 'i-heroicons-table-cells',
     },
     {
-        label: 'Result',
+        label: 'Prediction',
         icon: 'i-heroicons-chart-bar',
     },
 ];
