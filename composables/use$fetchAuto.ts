@@ -7,6 +7,7 @@ export function use$fetchWithAutoReNew<Data = TAPIResponse, ErrorData = Error>(
     url: string | MaybeRefOrGetter<string>,
     options?: NitroFetchOptions<NitroFetchRequest>
 ) {
+    const toast = useToast()
     const isWaiting = ref<boolean>(false)
     const config = useRuntimeConfig();
     const { apiAccessToken, apiAccessTokenStatus } = useMyAppState();
@@ -64,6 +65,13 @@ export function use$fetchWithAutoReNew<Data = TAPIResponse, ErrorData = Error>(
                         await options?.onResponseError?.(ctx);
                     }
                     status.value = 'error';
+                    if (!!ctx.response._data.message)
+                        toast.add({
+                            title: 'Error',
+                            icon: 'i-heroicons-x-circle',
+                            color: 'red',
+                            description: ctx.response._data.message
+                        })
                 },
             });
         } catch (err) {

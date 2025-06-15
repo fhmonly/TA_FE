@@ -3,7 +3,7 @@
         <div class="p-4 flex md:flex-row flex-col gap-3">
             <div class="flex gap-4 flex-wrap grow" :style="`margin-bottom:${footerMobileHeight}px;`"
                 ref="productsContainer">
-                <div v-for="(item, index) in productsFormState" :key="item.product_code + '-' + index"
+                <div v-for="(item, index) in storePurchase.cart" :key="item.product_code + '-' + index"
                     class="w-[250px] shrink-0 grow rounded-lg"
                     :class="{ 'bg-green-500/50 dark:bg-green-400/50 animate-pulse': item.product_code === productAlreadyExist }"
                     :id="`id-${item.product_code}`">
@@ -60,7 +60,7 @@
                 </div>
 
                 <!-- Empty State -->
-                <div v-if="productsFormState.length === 0"
+                <div v-if="storePurchase.cart.length === 0"
                     class="w-full flex flex-col items-center justify-center py-10 text-gray-500">
                     <div class="text-5xl mb-3">
                         <span class="i-heroicons-shopping-cart"></span>
@@ -74,8 +74,18 @@
                 <div class="md:w-1/2 max-w-[360px] h-full sm:min-w-[300px]">
                     <div class="sticky md:top-[80px]">
                         <NuxtUiCard>
-                            <h2 class="text-red-500 font-semibold text-center mb-3">Scan here</h2>
-                            <MyBarcodeScanner @scanned="handleScan" />
+                            <template v-if="qrShown">
+                                <h2 class="text-red-500 font-semibold text-center mb-3">Scan here</h2>
+                                <MyBarcodeScanner @scanned="handleInputItem" />
+                            </template>
+                            <template v-else>
+                                <h2 class="text-red-500 font-semibold text-center mb-3">Chose product</h2>
+                                <MySelectProduct @picked="handleInputItem" class="flex-wrap gap-2" />
+                            </template>
+                            <div class="flex justify-end mt-3">
+                                <NuxtUiButton :label="qrShown ? 'Manual Input' : 'Scan Mode'"
+                                    @click="qrShown = !qrShown" />
+                            </div>
                             <div class="mb-3">
                                 <div class="my-4">
                                     <NuxtUiDivider label="Cart Detail" />
@@ -83,17 +93,17 @@
                                 <p class="flex justify-between font-semibold">
                                     <span>Total:</span>
                                     <span class="text-green-500">
-                                        {{ numeral(priceTotal).format('0,0') }}
+                                        {{ numeral(storePurchase.cart).format('0,0') }}
                                     </span>
                                 </p>
                                 <p class="flex justify-between text-sm text-gray-500 mt-1">
                                     <span>Items:</span>
-                                    <span>{{ totalItems }}</span>
+                                    <span>{{ storePurchase.totalItem }}</span>
                                 </p>
                             </div>
                             <div class="flex justify-center">
                                 <NuxtUiButton label="Save" icon="i-lucide-lab-floppy-disk" block
-                                    :disabled="productsFormState.length === 0" @click="saveTransaction" />
+                                    :disabled="storePurchase.cart.length === 0" @click="saveTransaction" />
                             </div>
                         </NuxtUiCard>
                     </div>
@@ -103,10 +113,13 @@
             <!-- Scanner - Mobile -->
             <div v-else class="fixed bottom-0 right-0 px-3 pb-3 z-20"
                 :class="[windowWidth <= 768 ? 'left-0' : 'left-[280px]']" ref="footerMobile">
-                <div class="w-full max-w-[360px] mx-auto" v-if="qrShown">
+                <div class="w-full max-w-[360px]" v-if="qrShown">
                     <div class="rounded-md overflow-hidden shadow-lg">
-                        <MyBarcodeScanner @scanned="handleScan" />
+                        <MyBarcodeScanner @scanned="handleInputItem" />
                     </div>
+                </div>
+                <div v-else>
+                    <MySelectProduct @picked="handleInputItem" class="gap-4" />
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-md mt-3 shadow-lg justify-between flex items-center">
                     <div class="flex items-center justify-center gap-3">
@@ -114,14 +127,15 @@
                             :color="qrShown ? 'red' : 'gray'" />
                         <div>
                             <p class="dark:text-white">
-                                Total: <span class="text-green-500 font-semibold">{{ numeral(priceTotal).format('0,0')
+                                Total: <span class="text-green-500 font-semibold">{{
+                                    numeral(storePurchase.totalPrice).format('0,0')
                                 }}</span>
                             </p>
-                            <p class="text-sm text-gray-500">Items: {{ totalItems }}</p>
+                            <p class="text-sm text-gray-500">Items: {{ storePurchase.totalItem }}</p>
                         </div>
                     </div>
                     <NuxtUiButton label="Save" icon="i-lucide-lab-floppy-disk"
-                        :disabled="productsFormState.length === 0" @click="saveTransaction" />
+                        :disabled="storePurchase.cart.length === 0" @click="saveTransaction" />
                 </div>
             </div>
         </div>
@@ -137,8 +151,9 @@
             </NuxtUiCard>
         </NuxtUiModal>
 
+        <MyUiRestockNewProduct v-model:product_code="newProduct" @created="actAfterNewProductCreated" />
         <MyUiRestockSetBuyingPrice v-model:id-product="productWithoutBuyingPrice" @updated="e => {
-            productsFormState.push({
+            storePurchase.addItem({
                 amount: 1,
                 product_code: e.product_code,
                 product_name: e.product_name,
@@ -153,6 +168,7 @@
 import numeral from 'numeral'
 import { DashboardDatasetProductModalNew } from '#components'
 import { useElementSize, useWindowSize } from '@vueuse/core'
+import { useStorePurchaseCart } from '~/stores/cart/purchase'
 
 definePageMeta({
     middleware: 'authentication'
@@ -173,26 +189,7 @@ const highlightTimeout = ref<NodeJS.Timeout | null>(null)
 // Product container reference for scrolling
 const productsContainer = ref<HTMLDivElement>()
 
-// Product data
-const productsFormState = ref<{
-    product_code: string
-    product_name: string
-    price: number
-    amount: number
-}[]>([])
-
-// Computed properties
-const priceTotal = computed(() => {
-    return productsFormState.value.reduce((total, product) => {
-        return total + calculateSubtotal(product);
-    }, 0);
-});
-
-const totalItems = computed(() => {
-    return productsFormState.value.reduce((total, product) => {
-        return total + product.amount;
-    }, 0);
-});
+const storePurchase = useStorePurchaseCart()
 
 // Modal state
 const newProduct = ref<string>()
@@ -212,16 +209,16 @@ function decrementQty(item: { amount: number }) {
 
 const productWithoutBuyingPrice = ref()
 
-const handleScan = (code: string) => {
+const handleInputItem = (code: string) => {
     // Skip if code is empty or invalid
     if (!code || code.trim() === '') return;
 
     // Check if product already exists
-    const existingIndex = productsFormState.value.findIndex(p => p.product_code === code);
+    const existingIndex = storePurchase.cart.findIndex(p => p.product_code === code);
 
     if (existingIndex !== -1) {
         // Product exists, increment quantity
-        productsFormState.value[existingIndex].amount += 1;
+        storePurchase.cart[existingIndex].amount += 1;
 
         // Highlight the product
         highlightProduct(code);
@@ -249,12 +246,12 @@ const handleScan = (code: string) => {
             }
 
             // Add product to list
-            productsFormState.value.push({
+            storePurchase.addItem({
                 product_code: code,
                 product_name: data.product_name,
                 price: data.buying_price,
                 amount: 1
-            });
+            })
 
             // Scroll to the newly added product after DOM update
             nextTick(() => {
@@ -302,8 +299,8 @@ function highlightProduct(code: string) {
 }
 
 const handleDelete = (index: number | undefined) => {
-    if (index !== undefined && index >= 0 && index < productsFormState.value.length) {
-        productsFormState.value.splice(index, 1);
+    if (index !== undefined && index >= 0 && index < storePurchase.cart.length) {
+        storePurchase.cart.splice(index, 1);
     }
     deleteModalShown.value = false;
     deleteModalId.value = undefined;
@@ -319,12 +316,12 @@ function actAfterNewProductCreated(newProduct: {
     product_category_id: number;
 }) {
     console.log(newProduct)
-    productsFormState.value.push({
+    storePurchase.addItem({
         price: newProduct.buying_price,
         product_code: newProduct.product_code,
         product_name: newProduct.product_name,
         amount: 1
-    });
+    })
 
     // Highlight the newly added product
     highlightProduct(newProduct.product_code);
@@ -346,14 +343,14 @@ function saveTransaction() {
     const toast = useToast();
     const { execute } = use$fetchWithAutoReNew('/restocks', {
         method: 'post',
-        body: { data: productsFormState.value },
+        body: { data: storePurchase.cart },
         onResponse() {
             toast.add({
                 title: 'Success',
                 description: 'Transaction saved successfully',
                 color: 'green'
             });
-            productsFormState.value = [];
+            storePurchase.clearCart();
         }
     })
     execute()

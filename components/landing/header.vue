@@ -67,7 +67,7 @@
                             class="text-sm font-medium text-primary transition-colors hover:text-primary/80"
                             v-if="authState !== 'logged-in'">
                             Demo</NuxtLink>
-                        <NuxtUiButton label="Dashboard" v-if="authState === 'logged-in'" />
+                        <NuxtUiButton label="Dashboard" v-if="authState === 'logged-in'" to="/dashboard/home" />
                         <NuxtUiButton color="green" @click="() => {
                             if (route.path.startsWith('/auth/forgot-password')) {
                                 navigateTo('/auth')

@@ -22,7 +22,7 @@
                 </NuxtUiButton>
             </div>
         </div>
-        <NuxtImg src="https://placehold.co/600x400/png" format="webp" class="grow" />
+        <NuxtImg src="/assets/images/landing-hero.png" format="webp" class="grow object-contain" />
     </section>
 </template>
 <script lang="ts" setup>

@@ -8,6 +8,7 @@
     </div>
   </div>
   <NuxtUiNotifications />
+  <NuxtLoadingIndicator color="red" :throttle="0" />
 </template>
 <script lang="ts" setup>
 const isLoaded = ref(false)
@@ -20,7 +21,7 @@ watch(authState, (newVal, oldVal) => {
   }
 })
 onNuxtReady(async () => {
-  isLoaded.value = true
+  isLoaded.value = true;
 })
 </script>
 <style>

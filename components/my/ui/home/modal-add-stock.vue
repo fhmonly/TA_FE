@@ -103,12 +103,13 @@
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3 pt-2">
-                    <NuxtUiButton variant="outline" color="gray" size="lg" class="flex-1" @click="modalShown = false">
+                    <NuxtUiButton variant="outline" color="gray" size="lg" class="flex-1" @click="modalShown = false"
+                        block>
                         Cancel
                     </NuxtUiButton>
                     <NuxtUiButton @click="() => execute()" size="lg" class="flex-1"
                         :disabled="statusProduct === 'pending'" :loading="statusPost === 'pending'"
-                        icon="i-heroicons-plus-circle">
+                        icon="i-heroicons-plus-circle" block>
                         Add to Stock
                     </NuxtUiButton>
                 </div>

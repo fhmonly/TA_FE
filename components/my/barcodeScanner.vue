@@ -7,7 +7,7 @@
 
       <!-- Camera switcher button - only show if multiple cameras -->
       <NuxtUiButton v-if="hasMultipleCameras" class="absolute top-2 right-2 z-20" :disabled="status === 'changing'"
-        @click="switchCamera" icon="i-f7-camera-rotate-fill" variant="link" color="white">
+        @click="switchCamera" icon="i-f7-camera-rotate-fill" color="white">
       </NuxtUiButton>
 
       <!-- Scanner overlay -->

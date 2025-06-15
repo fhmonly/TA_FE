@@ -2,10 +2,10 @@
     <NuxtLayout name="main">
         <NuxtUiTabs :items="items" class="w-full">
             <template #purchase>
-                <MyPredictionsTrxPurchaseList />
+                <MyDummyPurchaseList />
             </template>
             <template #sales>
-                <MyPredictionsTrxSaleList />
+                <MyDummySaleList />
             </template>
         </NuxtUiTabs>
     </NuxtLayout>
@@ -17,12 +17,12 @@ definePageMeta({
 import type { TabItem } from '#ui/types'
 const items = ref<TabItem[]>([
     {
-        label: 'By Purchases',
+        label: 'Dummy Purchases',
         icon: 'i-heroicons:shopping-cart-20-solid',
         slot: 'purchase'
     },
     {
-        label: 'By Sales',
+        label: 'Dummy Sales',
         icon: 'i-heroicons:clipboard-document-list',
         slot: 'sales'
     }

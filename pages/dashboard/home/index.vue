@@ -11,73 +11,14 @@
 
             <!-- Prediction Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <NuxtUiCard class="bg-white dark:bg-gray-800">
-                    <div class="p-4">
-                        <h3 class="text-lg font-medium mb-4">Next Week Prediction</h3>
-                        <div class="space-y-4">
-                            <div v-for="(prediction, index) in weeklyPredictions" :key="index"
-                                class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div
-                                        class="w-8 h-8 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3">
-                                        <Icon name="lucide:package" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                    </div>
-                                    <div>
-                                        <p class="font-medium">{{ prediction.name }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{
-                                            prediction.category }}</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-medium">{{ prediction.predicted }} units</p>
-                                    <p class="text-sm"
-                                        :class="prediction.change > 0 ? 'text-green-500' : 'text-red-500'">
-                                        {{ prediction.change > 0 ? '+' : '' }}{{ prediction.change }}%
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <NuxtUiButton variant="outline" class="w-full mt-4">View Detailed Forecast
-                        </NuxtUiButton>
-                    </div>
-                </NuxtUiCard>
-
-                <NuxtUiCard class="bg-white dark:bg-gray-800">
-                    <div class="p-4">
-                        <h3 class="text-lg font-medium mb-4">Next Month Prediction</h3>
-                        <div class="space-y-4">
-                            <div v-for="(prediction, index) in monthlyPredictions" :key="index"
-                                class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div
-                                        class="w-8 h-8 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3">
-                                        <Icon name="lucide:package" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                    </div>
-                                    <div>
-                                        <p class="font-medium">{{ prediction.name }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{
-                                            prediction.category }}</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-medium">{{ prediction.predicted }} units</p>
-                                    <p class="text-sm"
-                                        :class="prediction.change > 0 ? 'text-green-500' : 'text-red-500'">
-                                        {{ prediction.change > 0 ? '+' : '' }}{{ prediction.change }}%
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <NuxtUiButton variant="outline" class="w-full mt-4">View Detailed Forecast
-                        </NuxtUiButton>
-                    </div>
-                </NuxtUiCard>
+                <MyUiHomeLatestPurchasesPredictions />
+                <MyUiHomeLatestSalesPredictions />
             </div>
         </main>
     </NuxtLayout>
 </template>
 <script lang="ts" setup>
-import { MyUiHomeStatsCard } from '#components';
+import { MyUiHomeLatestPurchasesPredictions, MyUiHomeStatsCard } from '#components';
 
 definePageMeta({
     middleware: 'authentication'

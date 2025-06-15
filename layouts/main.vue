@@ -5,20 +5,22 @@
                 class="m-3 md:mx-10 p-2 md:px-6 flex gap-2 shadow-md rounded-r-full rounded-l-full items-center bg-[#f9fafb]/70 text-gray-800 dark:bg-[#1f2937]/70 backdrop-blur-sm dark:text-white">
                 <NuxtUiButton icon="i-heroicons-bars-3-16-solid" class="aspect-[1/1] w-11 justify-center ms-3"
                     variant="ghost" color="white" @click="() => sidebarShownToggle()" />
-                <NuxtImg src="/assets/icons/logo-text.png" width="auto" height="32" format="webp"
-                    class="hidden tablet:block" />
-                <NuxtImg src="/assets/icons/logo.png" width="auto" height="32" format="webp"
-                    class="block tablet:hidden" />
+                <NuxtLink to='/'>
+                    <NuxtImg src="/assets/icons/logo-text.png" width="auto" height="32" format="webp"
+                        class="hidden tablet:block" />
+                    <NuxtImg src="/assets/icons/logo.png" width="auto" height="32" format="webp"
+                        class="block tablet:hidden" />
+                </NuxtLink>
                 <div class="ms-auto">
                     <NuxtUiDropdown :items="items" :popper="{ offsetDistance: 0, placement: 'bottom-end' }" :ui="{
                         container: 'mt-[5px!important]'
                     }">
-                        <NuxtUiButton color="white" label="fahim@gmail.com"
-                            trailing-icon="i-heroicons-chevron-down-20-solid" truncate :ui="{
+                        <NuxtUiButton color="white" label="Account" trailing-icon="i-heroicons-chevron-down-20-solid"
+                            truncate :ui="{
                                 rounded: 'rounded-full'
                             }">
                             <template #leading>
-                                <NuxtUiAvatar alt="fahim david" />
+                                <NuxtUiAvatar alt="Account" />
                             </template>
                         </NuxtUiButton>
                     </NuxtUiDropdown>
@@ -97,8 +99,8 @@ const {
 } = useAuthLogout()
 const items: DropdownItem[][] = [
     [{
-        label: 'MyProfile',
-        icon: 'i-heroicons-user-16-solid',
+        label: 'Dashboard',
+        icon: 'i-lucide:chart-column',
         to: '/dashboard/home'
     }],
     [{

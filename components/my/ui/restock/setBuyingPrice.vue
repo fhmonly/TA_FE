@@ -4,7 +4,7 @@
             <NuxtUiFormGroup required label="Selling price">
                 <NuxtUiInput v-model="formState.buying_price" />
             </NuxtUiFormGroup>
-            <div class="flex justify-end gap-2">
+            <div class="flex justify-end gap-2 mt-3">
                 <NuxtUiButton label="Cancel" color="gray" variant="ghost" />
                 <NuxtUiButton :loading="status === 'pending'" label="Save" @click="execute" />
             </div>

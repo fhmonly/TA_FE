@@ -1,3 +1,4 @@
+import type { TDynamicResponse } from "./basicResponse"
 import type { TProductCategoryResponse } from "./product_category"
 
 export type TProductResponse = {
@@ -18,3 +19,8 @@ export type TLowStockProductResponse = {
     stock: number;
     low_stock_limit: number;
 };
+
+export type TLimitedAllProductResponse = TDynamicResponse<{
+    product_code: string
+    product_name: string
+}[]>

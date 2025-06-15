@@ -131,10 +131,12 @@ const tabItems = [
     {
         label: 'Table',
         icon: 'i-heroicons-table-cells',
+        slot: 'table'
     },
     {
         label: 'Prediction',
         icon: 'i-heroicons-chart-bar',
+        slot: 'prediction'
     },
 ];
 </script>

@@ -26,6 +26,11 @@ export const sidebarItems = [
         to: '/dashboard/dataset',
         children: [
             {
+                label: 'Dummies',
+                to: '/dashboard/dataset/dummies',
+                icon: 'i-lucide:test-tube-diagonal',
+            },
+            {
                 label: 'Suppliers',
                 to: '/dashboard/dataset/suppliers',
                 icon: 'i-heroicons-building-storefront-20-solid',

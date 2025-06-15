@@ -20,7 +20,7 @@ export const useStoreFileRecord = defineStore('file-record', {
         },
         forecastAllProduct() {
             this.products.forEach(p => {
-                if (p.total >= 10)
+                if (p.total >= 10 && p.status === 'unpredicted')
                     p.status = 'fetch-prediction'
             })
         }
