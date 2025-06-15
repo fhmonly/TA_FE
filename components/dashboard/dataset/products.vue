@@ -5,7 +5,6 @@
                 <DashboardDatasetProductModalAdd @created="() => refresh()" />
                 <DashboardDatasetProductModalCategory />
             </div>
-            {{ modal.update.data }}
             <NuxtUiTable :loading="status === 'pending'" :rows="data?.data?.data" :columns="[
                 { key: 'actions', label: 'Actions' },
                 { key: 'category_name', label: 'Category' },

@@ -52,7 +52,7 @@
                             <div class="flex justify-between">
                                 <span class="inline-block pe-3 w-fit">Sub Total:</span>
                                 <span class="inline-block text-green-500 font-semibold">
-                                    {{ numeral(item.amount + item.price).format('0,0') }}
+                                    {{ numeral(calculateSubtotal(item)).format('0,0') }}
                                 </span>
                             </div>
                         </div>
@@ -129,7 +129,7 @@
                             <p class="dark:text-white">
                                 Total: <span class="text-green-500 font-semibold">{{
                                     numeral(storeCart.totalPrice).format('0,0')
-                                }}</span>
+                                    }}</span>
                             </p>
                             <p class="text-sm text-gray-500">Items: {{ storeCart.totalItem }}</p>
                         </div>
@@ -199,6 +199,10 @@ function decrementQty(item: { amount: number }) {
     if (item.amount > 1) {
         item.amount -= 1;
     }
+}
+
+function calculateSubtotal(product: { price: number, amount: number }) {
+    return product.price * product.amount;
 }
 
 const productIdWithoutSellingPrice = ref(undefined)
