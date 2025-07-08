@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
 type cartItem = {
+    id: number
     product_code: string
     product_name: string
     price: number

@@ -12,7 +12,8 @@
             <template #header>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <div
+                            class="w-11 h-11 flex justify-center items-center bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <Icon name="i-heroicons-cube" class="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
@@ -29,7 +30,8 @@
                 <!-- Product Info -->
                 <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                        <div
+                            class="bg-green-100 dark:bg-green-900/30 rounded-lg shrink-0 w-11 h-11 flex items-center justify-center">
                             <Icon name="i-heroicons-tag" class="w-4 h-4 text-green-600 dark:text-green-400" />
                         </div>
                         <div class="flex-1">
@@ -68,6 +70,11 @@
                         </NuxtUiInput>
                     </div>
                 </NuxtUiFormGroup>
+
+                <MyUiHomeWeeklyRecomendation :product-id="data.data.id" v-if="data?.data?.id"
+                    @suggested-value="e => formState.amount = e" />
+                <MyUiHomeMonthlyRecomendation :product-id="data.data.id" v-if="data?.data?.id"
+                    @suggested-value="e => formState.amount = e" />
 
                 <!-- Price Info -->
                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">

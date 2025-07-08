@@ -1,63 +1,13 @@
 <template>
     <NuxtLayout name="main">
-        <div class="p-4 flex md:flex-row flex-col gap-3">
+        <div class="p-4 flex gap-3">
             <div class="flex gap-4 flex-wrap grow" :style="`margin-bottom:${footerMobileHeight}px;`"
                 ref="productsContainer">
-                <div v-for="(item, index) in storePurchase.cart" :key="item.product_code + '-' + index"
-                    class="w-[250px] shrink-0 grow rounded-lg"
-                    :class="{ 'bg-green-500/50 dark:bg-green-400/50 animate-pulse': item.product_code === productAlreadyExist }"
-                    :id="`id-${item.product_code}`">
-                    <NuxtUiCard :ui="{ background: '' }">
-                        <header class="mb-2 pb-2 border-b border-gray-400 flex items-center">
-                            <h2 class="truncate grow font-bold">{{ item.product_name }}</h2>
-                            <div class="ps-2">
-                                <NuxtUiButton icon="i-heroicons-trash-20-solid" color="red" variant="ghost"
-                                    @click="deleteModalId = index; deleteModalShown = true" />
-                            </div>
-                        </header>
-                        <div class="space-y-2">
-                            <div class="flex justify-between">
-                                <span class="inline-block pe-3 w-fit">Price:</span>
-                                <span class="inline-block">{{ numeral(Number(item.price)).format('0,0') }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="inline-block pe-3 w-fit">Qty:</span>
-                                <span class="inline-block">
-                                    <div class="max-w-[150px]">
-                                        <NuxtUiInput v-model="item.amount" type="number" min="1" :ui="{
-                                            icon: {
-                                                leading: { pointer: '', padding: { md: 'px-2' } },
-                                                trailing: { pointer: '', padding: { md: 'px-2' } },
-                                            },
-                                            leading: {
-                                                padding: { md: 'ps-12' }
-                                            },
-                                            trailing: {
-                                                padding: { md: 'pe-12' }
-                                            },
-                                        }" size="md">
-                                            <template #leading>
-                                                <NuxtUiButton icon="i-heroicons-minus-small-20-solid"
-                                                    @click="decrementQty(item)" variant="link" color="gray"
-                                                    :disabled="item.amount <= 1" />
-                                            </template>
-                                            <template #trailing>
-                                                <NuxtUiButton icon="i-heroicons-plus-small-20-solid"
-                                                    @click="item.amount += 1" variant="link" color="gray" />
-                                            </template>
-                                        </NuxtUiInput>
-                                    </div>
-                                </span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="inline-block pe-3 w-fit">Sub Total:</span>
-                                <span class="inline-block text-green-500 font-semibold">
-                                    {{ numeral(calculateSubtotal(item)).format('0,0') }}
-                                </span>
-                            </div>
-                        </div>
-                    </NuxtUiCard>
-                </div>
+                <MyUiRestockCartItem :item-data="item" @remove-item="() => {
+                    deleteModalId = index;
+                    deleteModalShown = true
+                }" v-for="(item, index) in storePurchase.cart" :key="item.product_code + '-' + index"
+                    :class="{ 'bg-green-500/50 dark:bg-green-400/50 animate-pulse': item.product_code === productAlreadyExist }" />
 
                 <!-- Empty State -->
                 <div v-if="storePurchase.cart.length === 0"
@@ -154,6 +104,7 @@
         <MyUiRestockNewProduct v-model:product_code="newProduct" @created="actAfterNewProductCreated" />
         <MyUiRestockSetBuyingPrice v-model:id-product="productWithoutBuyingPrice" @updated="e => {
             storePurchase.addItem({
+                id: e.id,
                 amount: 1,
                 product_code: e.product_code,
                 product_name: e.product_name,
@@ -161,6 +112,7 @@
             })
         }" />
         <DashboardDatasetProductModalNew v-model:product_code="newProduct" @created="actAfterNewProductCreated" />
+        <MyUiRestockReceipt v-model:shown="modalReceiptShown" />
     </NuxtLayout>
 </template>
 
@@ -247,6 +199,7 @@ const handleInputItem = (code: string) => {
 
             // Add product to list
             storePurchase.addItem({
+                id: data.id,
                 product_code: code,
                 product_name: data.product_name,
                 price: data.buying_price,
@@ -317,6 +270,7 @@ function actAfterNewProductCreated(newProduct: {
 }) {
     console.log(newProduct)
     storePurchase.addItem({
+        id: newProduct.id,
         price: newProduct.buying_price,
         product_code: newProduct.product_code,
         product_name: newProduct.product_name,
@@ -339,21 +293,9 @@ function actAfterNewProductCreated(newProduct: {
     });
 }
 
+const modalReceiptShown = ref(false)
 function saveTransaction() {
-    const toast = useToast();
-    const { execute } = use$fetchWithAutoReNew('/restocks', {
-        method: 'post',
-        body: { data: storePurchase.cart },
-        onResponse() {
-            toast.add({
-                title: 'Success',
-                description: 'Transaction saved successfully',
-                color: 'green'
-            });
-            storePurchase.clearCart();
-        }
-    })
-    execute()
+    modalReceiptShown.value = true
 }
 
 // Clean up timeout on component unmount

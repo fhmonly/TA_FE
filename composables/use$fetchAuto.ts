@@ -8,6 +8,9 @@ export function use$fetchWithAutoReNew<Data = TAPIResponse, ErrorData = Error>(
     options?: NitroFetchOptions<NitroFetchRequest>
 ) {
     const toast = useToast()
+    const toastConfig = reactive({
+        timer: 5000
+    })
     const isWaiting = ref<boolean>(false)
     const config = useRuntimeConfig();
     const { apiAccessToken, apiAccessTokenStatus } = useMyAppState();
@@ -65,13 +68,15 @@ export function use$fetchWithAutoReNew<Data = TAPIResponse, ErrorData = Error>(
                         await options?.onResponseError?.(ctx);
                     }
                     status.value = 'error';
-                    if (!!ctx.response._data.message)
+                    if (!!ctx.response._data.message && toastConfig.timer) {
                         toast.add({
                             title: 'Error',
                             icon: 'i-heroicons-x-circle',
                             color: 'red',
-                            description: ctx.response._data.message
+                            description: ctx.response._data.message,
+                            timeout: toastConfig.timer
                         })
+                    }
                 },
             });
         } catch (err) {
@@ -88,5 +93,5 @@ export function use$fetchWithAutoReNew<Data = TAPIResponse, ErrorData = Error>(
         }
     })
 
-    return { data, status, error, execute };
+    return { data, status, error, execute, toastConfig };
 }

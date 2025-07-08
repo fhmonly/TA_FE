@@ -25,11 +25,11 @@ export const sidebarItems = [
         icon: 'i-heroicons-folder-20-solid',
         to: '/dashboard/dataset',
         children: [
-            {
-                label: 'Dummies',
-                to: '/dashboard/dataset/dummies',
-                icon: 'i-lucide:test-tube-diagonal',
-            },
+            // {
+            //     label: 'Dummies',
+            //     to: '/dashboard/dataset/dummies',
+            //     icon: 'i-lucide:test-tube-diagonal',
+            // },
             {
                 label: 'Suppliers',
                 to: '/dashboard/dataset/suppliers',

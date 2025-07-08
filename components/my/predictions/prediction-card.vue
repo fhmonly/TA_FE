@@ -29,11 +29,19 @@
                         <span>Max: {{ product.upper_bound || 0 }}</span>
                     </div>
                 </div>
+
+                <MyPredictionsPredictionCardDetail v-model:detail-prediction="detailPredictionData" />
             </template>
             <template v-else-if="product.status === 'unpredicted'">
                 <div class="product-unpredicted-state">
                     <NuxtUiAlert color="yellow" title="Prediction Pending"
                         description="This product has not yet been predicted. A prediction is required to proceed."
+                        class="mb-4" />
+                </div>
+            </template>
+            <template v-else-if="product.status === 'invalid'">
+                <div class="product-invalid-state">
+                    <NuxtUiAlert color="red" title="Invalid Prediction" :description="invalidResponseMessage"
                         class="mb-4" />
                 </div>
             </template>
@@ -53,10 +61,10 @@
                 description="You need to provide at least 10 records to proceed." />
         </template>
 
-        <template #footer v-if="product.total >= 10">
+        <template #footer v-if="product.total >= 10 && product.status !== 'invalid'">
             <div class="flex items-center justify-end text-sm text-gray-600 dark:text-gray-400">
                 <NuxtUiButton color="primary" variant="soft" size="sm" icon="i-heroicons-arrow-right" trailing
-                    v-if="product.status === 'predicted'">
+                    v-if="product.status === 'predicted'" @click="detailPredictionData = product">
                     Lihat Detail
                 </NuxtUiButton>
                 <NuxtUiButton icon="i-heroicons-rocket-launch" color="primary" variant="solid"
@@ -79,6 +87,7 @@ const product = defineModel<TPredictionProductList[number]>('product', {
     required: true
 })
 const storeFileRecord = useStoreFileRecord()
+const invalidResponseMessage = ref()
 watch(() => product.value.status, newVal => {
     if (newVal === 'fetch-prediction') {
         product.value.status = 'loading'
@@ -94,7 +103,6 @@ watch(() => product.value.status, newVal => {
                 date_column: 'date'
             } as TFilePredictionRequestBody,
             onResponse(ctx) {
-                console.log('predicted')
                 const response = (ctx.response._data as TFilePredictionResponse).data!
                 product.value.actual_prediction = Math.round(response.prediction[0])
                 product.value.lower_bound = Math.round(response.lower[0])
@@ -104,12 +112,18 @@ watch(() => product.value.status, newVal => {
                 product.value.model = response.arima_order
                 product.value.status = 'predicted'
             },
-            onResponseError() {
-                product.value.status = 'unpredicted'
+            onResponseError(ctx) {
+                if (ctx.response.status === 422) {
+                    product.value.status = 'invalid'
+                    invalidResponseMessage.value = ctx.response._data.message
+                } else {
+                    product.value.status = 'unpredicted'
+                }
             }
         })
         execute()
     }
 
 }, { immediate: true })
+const detailPredictionData = ref<TPredictionProductList[number]>()
 </script>

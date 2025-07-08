@@ -8,8 +8,14 @@
         <template v-if="data.data.length >= 1">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-3">
                 <MyPredictionsTrxCard :product="product" :key v-for="(product, key) in data.data"
-                    @update:product="newProduct => updateProduct(key, newProduct)"
-                    :prediction-period="selectedPeriod" />
+                    @update:product="newProduct => updateProduct(key, newProduct)" :prediction-period="selectedPeriod"
+                    @open-detail="e => {
+                        purchaseDetailProperty = {
+                            prediction_period: selectedPeriod,
+                            product_id: e,
+                            source_type: 'purchases'
+                        }
+                    }" />
             </div>
         </template>
         <template v-else>
@@ -20,6 +26,7 @@
             </div>
         </template>
     </template>
+    <MyPredictionsTrxDetail v-model:detail-property="purchaseDetailProperty" />
 </template>
 <script lang="ts" setup>
 import type { ExtractSuccessResponse } from '~/types/api-response/basicResponse';
@@ -39,4 +46,10 @@ function updateProduct(index: number, newProduct: ExtractSuccessResponse<TStockP
     if (data.value?.success)
         data.value.data[index] = newProduct
 }
+
+const purchaseDetailProperty = ref<{
+    product_id: number;
+    source_type: "sales" | "purchases";
+    prediction_period: "weekly" | "monthly";
+}>()
 </script>

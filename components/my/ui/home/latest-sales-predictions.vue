@@ -24,30 +24,42 @@
                 <template v-else>
                     <template v-if="data?.success">
                         <template v-if="data.data.length >= 1">
-                            <div v-for="(prediction, index) in data.data" :key="index"
-                                class="flex items-center justify-between">
-                                <div class="flex items-center">
+                            <NuxtUiCard v-for="(prediction, index) in data.data" :key="index">
+                                <div class="flex">
                                     <div
-                                        class="w-8 h-8 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3">
+                                        class="w-8 h-8 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3 shrink-0">
                                         <Icon name="lucide:package" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
                                     </div>
-                                    <div>
-                                        <p class="font-medium">{{ prediction.product_name }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ prediction.category_name
-                                        }}
-                                        </p>
+                                    <div class="w-full">
+                                        <div class="flex items-center justify-between">
+                                            <p class="font-medium">{{ prediction.product_name }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ prediction.category_name }}
+                                            </p>
+                                        </div>
+                                        <div class="flex-wrap border-t border-gray-400 mt-1 pt-1">
+                                            <div class="flex justify-between">
+                                                <span
+                                                    class="text-sm text-gray-500 dark:text-gray-400">Prediction:</span>
+                                                <p class="ms-2 text-sm">
+                                                    {{ getStockDeficitFromPrediction(
+                                                        prediction.prediction || [0],
+                                                        prediction.stock || 0
+                                                    ) }} units
+                                                </p>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span
+                                                    class="text-sm text-gray-500 dark:text-gray-400">Accuration:</span>
+                                                <p class="ms-2 text-sm" :class="classifyMAPE(prediction.mape).class">
+                                                    {{ classifyMAPE(prediction.mape).label }} ({{ 100 - +prediction.mape
+                                                    }}%)
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <p class="font-medium">{{ prediction.prediction }} units</p>
-                                    <div>
-                                        Accuration:
-                                        <p class="text-sm" :class="classifyMAPE(prediction.mape).class">
-                                            {{ classifyMAPE(prediction.mape).label }} ({{ prediction.mape }})
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                            </NuxtUiCard>
                             <NuxtUiButton variant="outline" class="w-full mt-4" to="/dashboard/prediction">View Detailed
                                 Forecast
                             </NuxtUiButton>
@@ -82,6 +94,7 @@
 </template>
 <script lang="ts" setup>
 import type { TLatestPredictionListResponse } from '~/types/api-response/prediction';
+import { getStockDeficitFromPrediction } from '~/utils/math/getStockDeficitFromPrediction';
 
 const trendTimeframe = ref('Weekly');
 const timeframeOptions = ['Weekly', 'Monthly'];

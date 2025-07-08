@@ -17,7 +17,7 @@
             <template v-if="!!product.prediction && !!product.upper_bound && !!product.lower_bound">
                 <div class="text-center mb-4">
                     <p class="text-5xl font-extrabold text-primary-600 dark:text-primary-400">
-                        {{ product.prediction || 0 }}
+                        {{ actualPrediction }}
                         <!-- <span class="text-xl font-normal text-gray-500 dark:text-gray-400">{{ product.unit }}</span> -->
                     </p>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Prediksi</p>
@@ -27,13 +27,13 @@
                     <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Rentang Prediksi:</p>
                     <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 relative">
                         <div class="absolute -top-1 w-4 h-4 rounded-full bg-primary-500 dark:bg-primary-300 border-2 border-white dark:border-gray-900 shadow-md transform -translate-x-1/2"
-                            :style="{ left: `${getPercentage(product.prediction, product.lower_bound, product.upper_bound)}%` }">
+                            :style="{ left: `${getPercentage(actualPrediction, actualLowerBound, actualUpperBound)}%` }">
                         </div>
                     </div>
 
                     <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span>Min: {{ product.lower_bound || 0 }}</span>
-                        <span>Max: {{ product.upper_bound || 0 }}</span>
+                        <span>Min: {{ actualLowerBound }}</span>
+                        <span>Max: {{ actualUpperBound }}</span>
                     </div>
                 </div>
             </template>
@@ -49,7 +49,7 @@
         <template #footer>
             <div class="flex items-center justify-end text-sm text-gray-600 dark:text-gray-400">
                 <NuxtUiButton color="primary" variant="soft" size="sm" icon="i-heroicons-arrow-right" trailing
-                    v-if="!!product.prediction">
+                    v-if="!!product.prediction" @click="emit('open-detail', product.id)">
                     Lihat Detail
                 </NuxtUiButton>
                 <NuxtUiButton icon="i-heroicons-rocket-launch" color="primary" variant="solid" @click="getPrediction"
@@ -65,6 +65,7 @@ import type { ExtractSuccessResponse } from '~/types/api-response/basicResponse'
 import type { TStockPredictionResponse } from '~/types/api-response/prediction';
 import { getPercentage } from '~/utils/math/percentage';
 
+const emit = defineEmits(['open-detail'])
 const predictionPeriod = defineModel<"weekly" | "monthly">('prediction-period', { required: true })
 const product = defineModel<ExtractSuccessResponse<TStockPredictionResponse>>('product', {
     required: true
@@ -76,10 +77,11 @@ function getPrediction() {
     isFetchingPrediction.value = true
     const {
         execute
-    } = use$fetchWithAutoReNew(`/sales-prediction/${product.value.id}`, {
+    } = use$fetchWithAutoReNew(`/smart-prediction/${product.value.id}`, {
         method: 'post',
         body: {
             prediction_period: predictionPeriod.value,
+            prediction_source: 'sales'
         },
         onResponse(ctx) {
             isFetchingPrediction.value = false
@@ -93,4 +95,28 @@ function getPrediction() {
     })
     execute()
 }
+
+const actualPrediction = computed(() => {
+    const p = (product.value?.prediction || [0]).reduce((prev, curr) => {
+        return Math.max(0, Number(prev) + Number(curr))
+    }, 0)
+    const s = +(product.value?.stock ?? 0)
+    return Math.max(0, p - s)
+})
+
+const actualLowerBound = computed(() => {
+    const lb = (product.value?.lower_bound || [0]).reduce((prev, curr) => {
+        return Math.max(0, Number(prev) + Number(curr))
+    }, 0)
+    const s = +(product.value?.stock ?? 0)
+    return Math.max(0, lb - s)
+})
+
+const actualUpperBound = computed(() => {
+    const ub = ((product.value?.upper_bound || [0]).reduce((prev, curr) => {
+        return Math.max(0, Number(prev) + Number(curr))
+    }, 0))
+    const s = +(product.value?.stock ?? 0)
+    return Math.max(0, ub - s)
+})
 </script>

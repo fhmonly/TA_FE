@@ -27,18 +27,19 @@ type StockPrediction = {
     buying_price: number;
     stock: number;
     low_stock_limit: number;
-    prediction: number | null;
-    lower_bound: number | null;
-    upper_bound: number | null;
+    prediction: number[] | null;
+    lower_bound: number[] | null;
+    upper_bound: number[] | null;
     rmse: number | null;
     mape: number | null;
-    // fake_json: string
+    model: [number, number, number]
 }
 export type TStockPredictionResponse = TDynamicResponse<StockPrediction>
 export type TStockPredictionListResponse = TDynamicResponse<StockPrediction[]>
 export type TLatestPredictionListResponse = TDynamicResponse<{
     product_name: string;
     mape: number;
-    prediction: number;
+    stock: number;
+    prediction: number[];
     category_name: string;
 }[]>

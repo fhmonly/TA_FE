@@ -8,5 +8,5 @@ export type TPredictionProductList = {
     mape?: number
     rmse?: number
     model?: [number, number, number]
-    status: 'unpredicted' | 'fetch-prediction' | 'loading' | 'predicted'
+    status: 'unpredicted' | 'fetch-prediction' | 'loading' | 'predicted' | 'invalid'
 }[]
