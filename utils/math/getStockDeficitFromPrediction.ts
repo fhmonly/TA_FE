@@ -1,7 +1,9 @@
 export function getStockDeficitFromPrediction(
-    predictionArray: number[],
+    predictionArray: number[] | string,
     stock: number
 ) {
+    if (typeof predictionArray === 'string')
+        predictionArray = JSON.parse(predictionArray)
     if (!Array.isArray(predictionArray)) throw new Error("predictionArray harus berupa array");
     if (+stock < 1) stock = 0
 

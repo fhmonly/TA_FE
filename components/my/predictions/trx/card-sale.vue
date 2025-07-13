@@ -63,6 +63,7 @@
 <script lang="ts" setup>
 import type { ExtractSuccessResponse } from '~/types/api-response/basicResponse';
 import type { TStockPredictionResponse } from '~/types/api-response/prediction';
+import { getStockDeficitFromPrediction } from '~/utils/math/getStockDeficitFromPrediction';
 import { getPercentage } from '~/utils/math/percentage';
 
 const emit = defineEmits(['open-detail'])
@@ -96,27 +97,19 @@ function getPrediction() {
     execute()
 }
 
-const actualPrediction = computed(() => {
-    const p = (product.value?.prediction || [0]).reduce((prev, curr) => {
-        return Math.max(0, Number(prev) + Number(curr))
-    }, 0)
-    const s = +(product.value?.stock ?? 0)
-    return Math.max(0, p - s)
-})
+const actualPrediction = computed(() => getStockDeficitFromPrediction(
+    product.value?.prediction || [0],
+    product.value?.stock || 0
+))
 
-const actualLowerBound = computed(() => {
-    const lb = (product.value?.lower_bound || [0]).reduce((prev, curr) => {
-        return Math.max(0, Number(prev) + Number(curr))
-    }, 0)
-    const s = +(product.value?.stock ?? 0)
-    return Math.max(0, lb - s)
-})
+const actualLowerBound = computed(() => getStockDeficitFromPrediction(
+    product.value?.lower_bound || [0],
+    product.value?.stock || 0
+))
 
-const actualUpperBound = computed(() => {
-    const ub = ((product.value?.upper_bound || [0]).reduce((prev, curr) => {
-        return Math.max(0, Number(prev) + Number(curr))
-    }, 0))
-    const s = +(product.value?.stock ?? 0)
-    return Math.max(0, ub - s)
-})
+const actualUpperBound = computed(() => getStockDeficitFromPrediction(
+    product.value?.upper_bound || [0],
+    product.value?.stock || 0
+))
+
 </script>
