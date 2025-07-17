@@ -7,7 +7,7 @@
                     variant="ghost" color="white" @click="() => sidebarShownToggle()" />
                 <NuxtLink to='/'>
                     <NuxtImg src="/assets/icons/logo-text.png" width="auto" height="32" format="webp"
-                        class="hidden tablet:block" />
+                        class="hidden tablet:block h-8" />
                     <NuxtImg src="/assets/icons/logo.png" width="auto" height="32" format="webp"
                         class="block tablet:hidden" />
                 </NuxtLink>

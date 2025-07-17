@@ -28,7 +28,7 @@ const isOpen = ref(false)
         <!-- Mobile Sidebar (USlideover) -->
         <NuxtUiSlideover v-model="isOpen">
             <div class="NuxtUi-p-4">
-                <UButton icon="i-heroicons-x-mark" color="gray" variant="ghost" class="NuxtUi-mb-4"
+                <NuxtUiButton icon="i-heroicons-x-mark" color="gray" variant="ghost" class="NuxtUi-mb-4"
                     @click="isOpen = false" />
                 <nav class="NuxtUi-flex NuxtUi-flex-col NuxtUi-gap-2">
                     <NuxtUiButton variant="ghost" to="/">Home</NuxtUiButton>
