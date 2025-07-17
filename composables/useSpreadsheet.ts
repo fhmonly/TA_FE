@@ -1,4 +1,4 @@
-import { headerNRow2Sheet, sheet2CSV, sheet2HeaderNRow, sheet2JSON, spreadsheetReader } from "~/utils/spreadsheet/fileReader"
+import { headerNRow2Sheet, sheet2HeaderNRow, sheet2JSON, spreadsheetReader } from "~/utils/spreadsheet/fileReader"
 import * as XLSX from 'xlsx'
 import type { TRecordJSONResult } from "~/types/table/prediction-input"
 
@@ -37,7 +37,7 @@ export function useSpreadSheet(inputFile: Ref<File | null>) {
             })
             const newWs = headerNRow2Sheet(validHeaders, rows)
             result.json.value = sheet2JSON<TRecordJSONResult>(newWs)
-            result.csv.value = sheet2CSV(newWs)
+            // result.csv.value = sheet2CSV(newWs)
         } catch (e: unknown) {
             setError(error.value?.message || 'Unknown Error', e as Error)
         } finally {
