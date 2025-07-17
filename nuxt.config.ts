@@ -4,8 +4,8 @@ export default defineNuxtConfig({
     routeRules: {
       '/_nuxt/**': {
         headers: {
-          'cache-control': 'public, max-age=31536000, immutable',
-          'content-encoding': 'br'
+          'cache-control': 'public, max-age=31536000, immutable'
+          // HAPUS 'content-encoding'
         }
       }
     }
