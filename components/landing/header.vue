@@ -5,7 +5,7 @@
         <NuxtUiContainer>
             <div class="flex h-16 items-center">
                 <NuxtLink href="/" class="flex items-center gap-2">
-                    <NuxtImg src="/assets/icons/logo-text.png" width="auto" height="44" format="webp" class="w-11"/>
+                    <NuxtImg src="/assets/icons/logo-text.png" width="auto" height="44" format="webp" class="h-11"/>
                 </NuxtLink>
 
                 <nav class="ml-auto flex items-center gap-4 sm:gap-6">
